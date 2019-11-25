@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Tile
+  - Piece
+  - PiecesManager
   layers:
   - Default
   - TransparentFX

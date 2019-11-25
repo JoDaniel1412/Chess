@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,14 +8,18 @@ namespace Board
     [ExecuteInEditMode]
     public class Tilemap : MonoBehaviour
     {
-        public int rows;
-        public int columns;
         public float offset;
         public Transform tilePref;
-        
+
+        private Board _board;
+        private int _rows;
+        private int _columns;
         
         private void Start()
         {
+            _board = GetComponentInParent<Board>();
+            _rows = _board.rows;
+            _columns = _board.columns;
             LoadGrid();
         }
 
@@ -32,25 +37,30 @@ namespace Board
         // Instantiates each tile of the grid
         private void LoadGrid()
         {
+            var matrix = new List<List<Tile>>();
             var tileSize = tilePref.GetComponent<MeshRenderer>().bounds.size;
             var xOffset = tileSize.x + offset;
             var zOffset = tileSize.z + offset;
             var count = 0;
             
-            for (var i = 0; i < rows; i++)
+            for (var i = 0; i < _rows; i++)
             {
                 var z = zOffset * i;
-                for (var j = 0; j < columns; j++)
+                var row = new List<Tile>();
+                for (var j = 0; j < _columns; j++)
                 {
                     var x = xOffset * j;
                     var poss = new Vector3(x, 0, z);
                     var tile = Instantiate(tilePref, poss, Quaternion.identity);
                     count++;
-                    SetupTile(tile, i, j, count);
+                    row.Add(SetupTile(tile, i, j, count));
                 }
-
+                
+                matrix.Add(row);
                 count--;
             }
+
+            _board.Matrix = matrix;
         }
         
         // Deletes the Grid
@@ -62,10 +72,11 @@ namespace Board
         }
 
         // Selects the color for the Tile and other properties
-        private void SetupTile(Transform tile, int i, int j, int count)
+        private Tile SetupTile(Transform tile, int i, int j, int count)
         {
             tile.SetParent(transform);
-            tile.GetComponent<Tile>().Index(i, j);
+            var sTile = tile.GetComponent<Tile>();
+            sTile.Index(i, j);
             
             // Material
             const string materialsPath = "Assets/Materials/Board/";
@@ -73,6 +84,7 @@ namespace Board
             if (count % 2 == 0) path = materialsPath + "WhiteTile.mat";
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
             tile.GetComponent<MeshRenderer>().sharedMaterial = material;
+            return sTile;
         }
     }
 }

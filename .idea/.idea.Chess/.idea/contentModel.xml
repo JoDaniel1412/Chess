@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
     <e p="C:\Users\José Acuña\.Rider2019.2\system\extResources" t="IncludeRecursive" />
@@ -8,8 +8,22 @@
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
           <e p="Board" t="Include">
+            <e p="Board.cs" t="Include" />
             <e p="Tile.cs" t="Include" />
             <e p="Tilemap.cs" t="Include" />
+            <e p="TilesController.cs" t="Include" />
+          </e>
+          <e p="GameController.cs" t="Include" />
+          <e p="Pieces" t="Include">
+            <e p="Bishop.cs" t="Include" />
+            <e p="King.cs" t="Include" />
+            <e p="Knight.cs" t="Include" />
+            <e p="Pawn.cs" t="Include" />
+            <e p="Piece.cs" t="Include" />
+            <e p="PieceBehavior.cs" t="Include" />
+            <e p="PiecesManager.cs" t="Include" />
+            <e p="Queen.cs" t="Include" />
+            <e p="Rook.cs" t="Include" />
           </e>
         </e>
       </e>
