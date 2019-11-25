@@ -8,7 +8,6 @@ namespace Pieces
     public abstract class Piece : MonoBehaviour
     {
         public Vector2Int poss;
-        
         protected PiecesManager PiecesManager;
         
         
@@ -35,8 +34,8 @@ namespace Pieces
         */
         protected List<Vector2Int> AMovement(List<Vector2Int> occupied, (int, int) dimensions, int range)
         {
-            var cMovement = CMovement(occupied, dimensions, 1);
-            var dMovement = DMovement(occupied, dimensions, 1);
+            var cMovement = CMovement(occupied, dimensions, range);
+            var dMovement = DMovement(occupied, dimensions, range);
             return cMovement.Concat(dMovement).ToList();
         }
         
@@ -49,9 +48,8 @@ namespace Pieces
          */
         protected IEnumerable<Vector2Int> CMovement(List<Vector2Int> occupied, (int, int) dimensions, int range)
         {
-            var (rows, columns) = dimensions;
-            var hMovement = HMovement(occupied, rows, range);
-            var vMovement = VMovement(occupied, columns, range);
+            var hMovement = HMovement(occupied, dimensions, range);
+            var vMovement = VMovement(occupied, dimensions, range);
             return hMovement.Concat(vMovement).ToList();
         }
         
@@ -74,18 +72,18 @@ namespace Pieces
         }
 
         // Return all possible movements in horizontal
-        private IEnumerable<Vector2Int> HMovement(ICollection<Vector2Int> occupied, int columns, int range)
+        private IEnumerable<Vector2Int> HMovement(ICollection<Vector2Int> occupied, (int, int) dimensions, int range)
         {
             var function = new Vector2Int(1, 0);
-            return IterateVectors(occupied, function, (0, columns), range);
+            return IterateVectors(occupied, function, dimensions, range);
         }
         
         // Return all possible movements in vertical
-        private IEnumerable<Vector2Int> VMovement(ICollection<Vector2Int> occupied, int rows, int range)
+        private IEnumerable<Vector2Int> VMovement(ICollection<Vector2Int> occupied, (int, int) dimensions, int range)
         {
             
             var function = new Vector2Int(0, 1);
-            return IterateVectors(occupied, function, (rows, 0), range);
+            return IterateVectors(occupied, function, dimensions, range);
         }
 
         /**
@@ -95,14 +93,14 @@ namespace Pieces
         private IEnumerable<Vector2Int> IterateVectors(ICollection<Vector2Int> occupied, Vector2Int function, (int, int) dimensions, int range)
         {
             var result = new List<Vector2Int>();
-            var i = poss.x++;
-            var j = poss.y++;
+            var i = poss.x + function.x;
+            var j = poss.y + function.y;
             var movements = 0;
             
             #region Evaluates positives
 
             var (rows, columns) = dimensions;
-            while (i < rows || j < columns)
+            while (i < columns || j < rows)
             {
                 var vect2 = new Vector2Int(i, j);
                 if (occupied.Contains(vect2) || movements >= range )  // Breaks if collides or max movements reached
@@ -117,15 +115,15 @@ namespace Pieces
             
             #endregion
 
-            i = poss.x--;
-            j = poss.y--;
+            i = poss.x - function.x;
+            j = poss.y - function.y;
             movements = 0;
             
             #region Evaluates negatives
             
             while (i > 0 || j > 0)
             {
-                var vect2 = new Vector2Int(i, poss.y);
+                var vect2 = new Vector2Int(i, j);
                 if (occupied.Contains(vect2) || movements >= range)  // Breaks if collides or max movements reached
                     break;
                 

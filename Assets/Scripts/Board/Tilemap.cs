@@ -60,7 +60,7 @@ namespace Board
                 count--;
             }
 
-            _board.Matrix = matrix;
+            if (_board) _board.Matrix = matrix;
         }
         
         // Deletes the Grid
