@@ -17,12 +17,12 @@ namespace Pieces
 
         private void OnMouseDown()
         {
-            _piecesManager.HighlightMovements(_piece.Movements(), true);
+            _piecesManager.SelectTarget(gameObject, _piece.Movements());
         }
 
         private void OnMouseUp()
         {
-            _piecesManager.HighlightMovements(_piece.Movements(), false);
+            _piecesManager.DropTarget();
         }
     }
 }

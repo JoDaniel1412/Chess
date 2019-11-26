@@ -15,13 +15,14 @@ namespace Board
             _board = GetComponentInParent<Board>();
         }
 
-        public void HighlightMovements((List<Vector2Int>, bool) message)
+        public void HighlightMovements((List<Vector2Int>, bool, bool) message)
         {
-            var (movements, state) = message;
+            var (movements, state, enemies) = message;
             var tiles = _board.GetTiles(movements);
             foreach (var tile in tiles)
             {
-                tile.HighlightMovement(state);
+                if (enemies) tile.HighlightEnemy(state);
+                else tile.HighlightMovement(state);
             }
         }
         

@@ -6,18 +6,26 @@ namespace Board
 {
     public class Tile : MonoBehaviour
     {
-        public Material highlight;
-        public Material movement; 
+        public GameObject highlight;
+        public Material selectedMaterial;
+        public Material movementMaterial; 
+        public Material enemyMaterial; 
             
         private int _i;
         private int _j;
         private bool _occupied;
-        private Material _defaultMaterial;
 
         // Changes the Tile color to Movement material
         public void HighlightMovement(bool state)
         {
-            if (state) Highlight(movement);
+            if (state) Highlight(movementMaterial);
+            else UnHighlight();
+        }
+        
+        // Changes the Tile color to Enemy material
+        public void HighlightEnemy(bool state)
+        {
+            if (state) Highlight(enemyMaterial);
             else UnHighlight();
         }
 
@@ -34,15 +42,10 @@ namespace Board
                 _occupied = true;
         }
 
-        private void Start()
-        {
-            _defaultMaterial = GetComponent<MeshRenderer>().material;
-        }
-
         // Highlights the Tile when the mouse enters
         private void OnMouseEnter()
         {
-            Highlight(highlight);
+            Highlight(selectedMaterial);
         }
 
         // Removes the highlight of the Tile when mouse exit
@@ -53,12 +56,13 @@ namespace Board
 
         private void Highlight(Material material)
         {
-            GetComponent<MeshRenderer>().material = material;
+            highlight.SetActive(true);
+            highlight.GetComponent<MeshRenderer>().material = material;
         }
 
         public void UnHighlight()
         {
-            GetComponent<MeshRenderer>().material = _defaultMaterial;
+            highlight.SetActive(false);
         }
         
 

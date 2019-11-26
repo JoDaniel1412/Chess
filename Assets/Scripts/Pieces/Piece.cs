@@ -17,7 +17,7 @@ namespace Pieces
         public enum Team {White, Black};
         
         // Returns all possible movements a piece can do
-        public abstract List<Vector2Int> Movements();
+        public abstract (List<Vector2Int> movements, List<Vector2Int> enemies) Movements();
 
         // Changes the Piece material base on Team
         public void SetTeam(Team newTeam)
@@ -60,11 +60,15 @@ namespace Pieces
         * @jRange are the rows count of the Board
         * @range is the piece max movement tiles
         */
-        protected List<Vector2Int> AMovement(List<Vector2Int> occupied, (int, int) dimensions, int range=8)
+        protected (List<Vector2Int> movements, List<Vector2Int> enemies) AMovement(List<Vector2Int> occupied, (int, int) dimensions, int range=8)
         {
-            var cMovement = CMovement(occupied, dimensions, range);
-            var dMovement = DMovement(occupied, dimensions, range);
-            return cMovement.Concat(dMovement).ToList();
+            var (cMovement, enemies1) = CMovement(occupied, dimensions, range);
+            var (dMovement,enemies2) = DMovement(occupied, dimensions, range);
+            
+            var movements = cMovement.Concat(dMovement).ToList();
+            var enemies = enemies1.Concat(enemies2).ToList();
+            
+            return (movements, enemies);
         }
         
         /**
@@ -74,11 +78,15 @@ namespace Pieces
          * @jRange are the rows count of the Board
          * @range is the piece max movement tiles
          */
-        protected List<Vector2Int> CMovement(List<Vector2Int> occupied, (int, int) dimensions, int range=8)
+        protected (List<Vector2Int> movements, List<Vector2Int> enemies) CMovement(List<Vector2Int> occupied, (int, int) dimensions, int range=8)
         {
-            var hMovement = HMovement(occupied, dimensions, range);
-            var vMovement = VMovement(occupied, dimensions, range);
-            return hMovement.Concat(vMovement).ToList();
+            var (hMovement, enemies1) = HMovement(occupied, dimensions, range);
+            var (vMovement,enemies2) = VMovement(occupied, dimensions, range);
+            
+            var movements = hMovement.Concat(vMovement).ToList();
+            var enemies = enemies1.Concat(enemies2).ToList();
+            
+            return (movements, enemies);
         }
         
         /**
@@ -88,26 +96,29 @@ namespace Pieces
          * @jRange are the rows count of the Board
          * @range is the piece max movement tiles
          */
-        protected IEnumerable<Vector2Int> DMovement(List<Vector2Int> occupied, (int, int) dimensions, int range=8)
+        protected (List<Vector2Int> movements, List<Vector2Int> enemies) DMovement(List<Vector2Int> occupied, (int, int) dimensions, int range=8)
         {
             var function = new Vector2Int(1, 1);
-            var left = IterateVectors(occupied, function, dimensions, range);
+            var (left, enemies1) = IterateVectors(occupied, function, dimensions, range);
             
             function = new Vector2Int(-1, 1);
-            var right = IterateVectors(occupied, function, dimensions, range);
+            var (right, enemies2) = IterateVectors(occupied, function, dimensions, range);
 
-            return left.Concat(right).ToList();
+            var movements = left.Concat(right).ToList();
+            var enemies = enemies1.Concat(enemies2).ToList();
+            
+            return (movements, enemies);
         }
 
         // Return all possible movements in horizontal
-        private IEnumerable<Vector2Int> HMovement(ICollection<Vector2Int> occupied, (int, int) dimensions, int range)
+        private (List<Vector2Int>, List<Vector2Int>) HMovement(ICollection<Vector2Int> occupied, (int, int) dimensions, int range)
         {
             var function = new Vector2Int(1, 0);
             return IterateVectors(occupied, function, dimensions, range);
         }
         
         // Return all possible movements in vertical
-        private IEnumerable<Vector2Int> VMovement(ICollection<Vector2Int> occupied, (int, int) dimensions, int range)
+        private (List<Vector2Int>, List<Vector2Int>) VMovement(ICollection<Vector2Int> occupied, (int, int) dimensions, int range)
         {
             
             var function = new Vector2Int(0, 1);
@@ -118,9 +129,10 @@ namespace Pieces
          * Recursively applies the operator(+-) function to the Poss vector checking if doesnt collide with
          * other piece and keeping it inside the board range and max movements range
          */
-        private IEnumerable<Vector2Int> IterateVectors(ICollection<Vector2Int> occupied, Vector2Int function, (int, int) dimensions, int range)
+        private (List<Vector2Int>, List<Vector2Int>) IterateVectors(ICollection<Vector2Int> occupied, Vector2Int function, (int, int) dimensions, int range)
         {
             var result = new List<Vector2Int>();
+            var enemies = new List<Vector2Int>();
             var i = poss.x + function.x;
             var j = poss.y + function.y;
             var movements = 0;
@@ -131,8 +143,12 @@ namespace Pieces
             while (i < columns || j < rows)
             {
                 var vect2 = new Vector2Int(i, j);
-                if (occupied.Contains(vect2) || movements >= range )  // Breaks if collides or max movements reached
+                if (occupied.Contains(vect2) || movements >= range) // Breaks if collides or max movements reached
+                {
+                    if (PiecesManager.IsEnemy(vect2, team))
+                        enemies.Add(vect2);
                     break;
+                }
                 
                 result.Add(vect2);
                 
@@ -153,7 +169,11 @@ namespace Pieces
             {
                 var vect2 = new Vector2Int(i, j);
                 if (occupied.Contains(vect2) || movements >= range)  // Breaks if collides or max movements reached
+                {
+                    if (PiecesManager.IsEnemy(vect2, team))
+                        enemies.Add(vect2);
                     break;
+                }
                 
                 result.Add(vect2);
                 
@@ -164,7 +184,7 @@ namespace Pieces
             
             #endregion
 
-            return result;
+            return (result, enemies);
         }
         
     }

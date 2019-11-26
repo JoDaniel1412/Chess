@@ -11,6 +11,7 @@ namespace Pieces
     {
         private GameController _gameController;
         private Board.Board _board;
+        private List<GameObject> _pieces = new List<GameObject>();
         private readonly List<List<(char, char)>> _alignment = new List<List<(char, char)>>
         {
             new List<(char, char)> {('R','W'), ('H','W'), ('B','W'), ('K','W'), ('Q','W'), ('B','W'), ('H','W'), ('R','W')},
@@ -21,17 +22,45 @@ namespace Pieces
             new List<(char, char)> (),
             new List<(char, char)> {('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B')},
             new List<(char, char)> {('R','B'), ('H','B'), ('B','B'), ('Q','B'), ('K','B'), ('B','B'), ('H','B'), ('R','B')},
-
         };
-        
-        public void HighlightMovements(List<Vector2Int> movements, bool state)
+        private GameObject _target;
+        private (List<Vector2Int> movements, List<Vector2Int> enemies) _targetMoves;
+
+
+        public void SelectTarget(GameObject target, (List<Vector2Int> movements, List<Vector2Int> enemies) moves )
         {
-            _board.GetComponentInChildren<TilesController>().SendMessage("HighlightMovements", (movements, state));
+            _target = target;
+            _targetMoves = moves;
+            HighlightMovements(moves.movements, true, false);
+            HighlightMovements(moves.enemies, true, true);
         }
-        
+
+        public void DropTarget()
+        {
+            HighlightMovements(_targetMoves.movements, false, false);
+            HighlightMovements(_targetMoves.enemies, false, true);
+        }
+
         public List<Vector2Int> GetOccupied()
         {
             return _board.GetOccupied();
+        }
+
+        // Return a bool if the piece in the poss is an enemy
+        public bool IsEnemy(Vector2Int vect, Piece.Team myTeam)
+        {
+            var result = false;
+            
+            foreach (var pieceObj in _pieces)
+            {
+                var piece = pieceObj.GetComponent<Piece>();
+                if (piece.poss.x != vect.x || piece.poss.y != vect.y) continue;
+                result = !piece.team.Equals(myTeam);
+                break;
+
+            }
+
+            return result;
         }
 
         public (int, int) GetDimensions()
@@ -44,6 +73,11 @@ namespace Pieces
             _gameController = FindObjectOfType<GameController>();
             _board = FindObjectOfType<Board.Board>();
             LoadPieces();
+        }
+
+        private void HighlightMovements(List<Vector2Int> movements, bool state, bool enemies)
+        {
+            _board.GetComponentInChildren<TilesController>().SendMessage("HighlightMovements", (movements, state, enemies));
         }
 
         private void LoadPieces()
@@ -105,6 +139,7 @@ namespace Pieces
             var piece = Instantiate(prefab, poss, prefab.transform.rotation);
             var script = piece.GetComponent<Piece>();
             piece.transform.SetParent(transform);
+            _pieces.Add(piece);
             script.SetTeam(team);
             script.poss = new Vector2Int(i, j);
         }

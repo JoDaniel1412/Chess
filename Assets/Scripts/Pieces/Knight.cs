@@ -7,41 +7,45 @@ namespace Pieces
 {
     public class Knight : Piece
     {
-        public override List<Vector2Int> Movements()
+        public override (List<Vector2Int> movements, List<Vector2Int> enemies) Movements()
         {
             var occupied = PiecesManager.GetOccupied();
             var dimensions = PiecesManager.GetDimensions();
             
             var function = new Vector2Int(1, 2);
-            var positives = KnightMovement(occupied, function, dimensions);
+            var (positives, enemies1) = KnightMovement(occupied, function, dimensions);
             
             function = new Vector2Int(2, 1);
-            var negatives = KnightMovement(occupied, function, dimensions);
+            var (negatives, enemies2) = KnightMovement(occupied, function, dimensions);
             
-            return positives.Concat(negatives).ToList();
+            var movements = positives.Concat(negatives).ToList();
+            var enemies = enemies1.Concat(enemies2).ToList();
+            
+            return (movements, enemies);
         }
 
-        private IEnumerable<Vector2Int> KnightMovement(ICollection<Vector2Int> occupied, Vector2Int function, (int, int) dimensions)
+        private (List<Vector2Int> result, List<Vector2Int> enemies) KnightMovement(ICollection<Vector2Int> occupied, Vector2Int function, (int, int) dimensions)
         {
             var result = new List<Vector2Int>();
+            var enemies = new List<Vector2Int>();
+            var movements = new List<Vector2Int>
+            {
+                new Vector2Int(poss.x + function.x, poss.y + function.y),
+                new Vector2Int(poss.x - function.x, poss.y - function.y),
+                new Vector2Int(poss.x + function.x, poss.y - function.y),
+                new Vector2Int(poss.x - function.x, poss.y + function.y)
+            };
 
-            var vect = new Vector2Int(poss.x + function.x, poss.y + function.y);
-            if (IsMovementLegal(vect, occupied, dimensions)) 
-                result.Add(vect);
+            foreach (var movement in movements)
+            {
+                if (!IsMovementLegal(movement, occupied, dimensions)) continue;
+                
+                if (PiecesManager.IsEnemy(movement, team)) enemies.Add(movement);
+                else result.Add(movement);
+                break;
+            }
             
-            vect = new Vector2Int(poss.x - function.x, poss.y - function.y); 
-            if (IsMovementLegal(vect, occupied, dimensions)) 
-                result.Add(vect);
-            
-            vect = new Vector2Int(poss.x + function.x, poss.y - function.y); 
-            if (IsMovementLegal(vect, occupied, dimensions)) 
-                result.Add(vect);  
-            
-            vect = new Vector2Int(poss.x - function.x, poss.y + function.y); 
-            if (IsMovementLegal(vect, occupied, dimensions)) 
-                result.Add(vect);
-            
-            return result;
+            return (result, enemies);
         }
 
         private static bool IsMovementLegal(Vector2Int vect, ICollection<Vector2Int> occupied, (int, int) dimensions)

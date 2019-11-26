@@ -5,9 +5,9 @@ namespace Pieces
 {
     public class Bishop : Piece
     {
-        public override List<Vector2Int> Movements()
+        public override (List<Vector2Int> movements, List<Vector2Int> enemies) Movements()
         {
-            return (List<Vector2Int>) DMovement(PiecesManager.GetOccupied(), PiecesManager.GetDimensions());
+            return DMovement(PiecesManager.GetOccupied(), PiecesManager.GetDimensions());
         }
     }
 }
