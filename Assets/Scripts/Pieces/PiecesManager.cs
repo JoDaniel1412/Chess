@@ -11,7 +11,10 @@ namespace Pieces
     {
         private GameController _gameController;
         private Board.Board _board;
+        private TilesController _tilesController;
         private List<GameObject> _pieces = new List<GameObject>();
+        private GameObject _target;
+        private (List<Vector2Int> movements, List<Vector2Int> enemies) _targetMoves;
         private readonly List<List<(char, char)>> _alignment = new List<List<(char, char)>>
         {
             new List<(char, char)> {('R','W'), ('H','W'), ('B','W'), ('K','W'), ('Q','W'), ('B','W'), ('H','W'), ('R','W')},
@@ -23,8 +26,6 @@ namespace Pieces
             new List<(char, char)> {('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B')},
             new List<(char, char)> {('R','B'), ('H','B'), ('B','B'), ('Q','B'), ('K','B'), ('B','B'), ('H','B'), ('R','B')},
         };
-        private GameObject _target;
-        private (List<Vector2Int> movements, List<Vector2Int> enemies) _targetMoves;
 
 
         public void SelectTarget(GameObject target, (List<Vector2Int> movements, List<Vector2Int> enemies) moves )
@@ -37,6 +38,9 @@ namespace Pieces
 
         public void DropTarget()
         {
+            var possTo = _tilesController.GetTileOnMouse();
+            _target.SendMessage("Move", possTo);
+            _target = null;
             HighlightMovements(_targetMoves.movements, false, false);
             HighlightMovements(_targetMoves.enemies, false, true);
         }
@@ -63,6 +67,11 @@ namespace Pieces
             return result;
         }
 
+        public Vector3 GetTarget(Vector2Int poss)
+        {
+            return _board.GetTilePoss(poss.x, poss.y);
+        }
+
         public (int, int) GetDimensions()
         {
             return (_board.rows, _board.columns);
@@ -72,6 +81,7 @@ namespace Pieces
         {
             _gameController = FindObjectOfType<GameController>();
             _board = FindObjectOfType<Board.Board>();
+            _tilesController = _board.GetComponentInChildren<TilesController>();
             LoadPieces();
         }
 

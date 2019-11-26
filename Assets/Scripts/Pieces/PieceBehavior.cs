@@ -8,21 +8,25 @@ namespace Pieces
         private Piece _piece;
         private PiecesManager _piecesManager;
 
-        private void Start()
-        {
-            
-            _piece = GetComponent<Piece>();
-            _piecesManager = GetComponentInParent<PiecesManager>();
-        }
 
-        private void OnMouseDown()
+        public void Selected()
         {
             _piecesManager.SelectTarget(gameObject, _piece.Movements());
         }
 
-        private void OnMouseUp()
+        public void Dropped()
         {
             _piecesManager.DropTarget();
         }
+        
+        private void Start()
+        {
+            _piece = GetComponent<Piece>();
+            _piecesManager = GetComponentInParent<PiecesManager>();
+        }
+
+        private void OnMouseDown() => Selected();
+
+        private void OnMouseUp() => Dropped();
     }
 }

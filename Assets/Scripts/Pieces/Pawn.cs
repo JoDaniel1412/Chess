@@ -21,8 +21,8 @@ namespace Pieces
             // Check Enemies
             var enemy1 = new Vector2Int(poss.x + dir, poss.y + 1);
             var enemy2 = new Vector2Int(poss.x + dir, poss.y - 1);
-            if (occupied.Contains(enemy1)) enemies.Add(enemy1);
-            if (occupied.Contains(enemy2)) enemies.Add(enemy2);
+            if (occupied.Contains(enemy1) && PiecesManager.IsEnemy(enemy1, team)) enemies.Add(enemy1);
+            if (occupied.Contains(enemy2) && PiecesManager.IsEnemy(enemy2, team)) enemies.Add(enemy2);
 
 
             // Checks collisions

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Board
@@ -25,6 +26,23 @@ namespace Board
                 else tile.HighlightMovement(state);
             }
         }
-        
+
+        public Vector2Int GetTileOnMouse()
+        {
+            var result = new Vector2Int(-1, -1);
+            
+            foreach (var row in _board.Matrix)
+            {
+                foreach (var tile in row.Where(tile => tile.Elevated))
+                {
+                    result = new Vector2Int(tile.I, tile.J);
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        public GameObject TileTarget { get; set; }
     }
 }

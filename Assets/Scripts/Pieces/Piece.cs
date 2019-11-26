@@ -13,6 +13,8 @@ namespace Pieces
         
         protected PiecesManager PiecesManager;
 
+        private Vector3 _target = Vector3.zero;
+        private const float Speed = 0.1f;
 
         public enum Team {White, Black};
         
@@ -47,10 +49,18 @@ namespace Pieces
             PiecesManager = FindObjectOfType<PiecesManager>();
         }
 
+        protected void Update()
+        {
+            if (_target.Equals(Vector3.zero)) return;
+            transform.position = Vector3.Lerp(transform.position, _target, Speed);
+        }
+
         // Updates the position
         protected virtual void Move(Vector2Int newPoss)
         {
+            if (newPoss.Equals(new Vector2Int(-1, -1))) return;
             poss = newPoss;
+            _target = PiecesManager.GetTarget(newPoss);
         }
         
         /**
