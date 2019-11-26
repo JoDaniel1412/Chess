@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace Pieces
@@ -17,6 +18,29 @@ namespace Pieces
         
         // Returns all possible movements a piece can do
         public abstract List<Vector2Int> Movements();
+
+        // Changes the Piece material base on Team
+        public void SetTeam(Team newTeam)
+        {
+            team = newTeam;
+            var mesh = GetComponent<MeshRenderer>();
+            var path = "Assets/Materials/Pieces/";
+
+            switch (newTeam)
+            {
+                case Team.Black:
+                    path += "BlackPiece.mat";
+                    break;
+                case Team.White:
+                    path += "WhitePiece.mat";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(newTeam), newTeam, null);
+            }
+            
+            var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            mesh.material = material;
+        }
         
         protected void Start()
         {

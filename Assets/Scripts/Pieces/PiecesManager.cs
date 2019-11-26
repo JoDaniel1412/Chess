@@ -11,18 +11,18 @@ namespace Pieces
     {
         private GameController _gameController;
         private Board.Board _board;
-        private readonly List<List<char>> _alignment = new List<List<char>>
-        {
-            new List<char> {'R', 'H', 'B', 'K', 'Q', 'B', 'H', 'R'},
-            new List<char> {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'}
-        };
-        
-        /**
         private readonly List<List<(char, char)>> _alignment = new List<List<(char, char)>>
         {
             new List<(char, char)> {('R','W'), ('H','W'), ('B','W'), ('K','W'), ('Q','W'), ('B','W'), ('H','W'), ('R','W')},
-            new List<(char, char)> {('P','W'), ('P','W'), ('P','W'), ('P','W'), ('P','W'), ('P','W'), ('P','W'), ('P','W')}
-        };**/
+            new List<(char, char)> {('P','W'), ('P','W'), ('P','W'), ('P','W'), ('P','W'), ('P','W'), ('P','W'), ('P','W')},
+            new List<(char, char)> (),
+            new List<(char, char)> (),
+            new List<(char, char)> (),
+            new List<(char, char)> (),
+            new List<(char, char)> {('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B'), ('P','B')},
+            new List<(char, char)> {('R','B'), ('H','B'), ('B','B'), ('Q','B'), ('K','B'), ('B','B'), ('H','B'), ('R','B')},
+
+        };
         
         public void HighlightMovements(List<Vector2Int> movements, bool state)
         {
@@ -50,10 +50,11 @@ namespace Pieces
         {
             for (var i = 0; i < _alignment.Count; i++)
             {
-                for (var j = 0; j < _alignment.First().Count; j++)
+                for (var j = 0; j < _alignment[i].Count; j++)
                 {
                     var path = "Assets/Prefabs/Pieces/";
-                    var letter = _alignment[i][j];
+                    var letter = _alignment[i][j].Item1;
+                    var color = _alignment[i][j].Item2;
                     
                     #region Decides witch piece to place
                     
@@ -83,18 +84,29 @@ namespace Pieces
                     }
                     
                     #endregion
+
+                    #region Decides the team
+
+                    var team = Piece.Team.White;
+                    if (color.Equals('B')) team = Piece.Team.Black;
+
+                    #endregion
                     
                     if (path.Equals("")) continue;
                     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                    LoadPiece(i, j, prefab);
+                    LoadPiece(i, j, prefab, team);
                 }
             }
         }
 
-        private void LoadPiece(int i, int j, GameObject prefab)
+        private void LoadPiece(int i, int j, GameObject prefab, Piece.Team team)
         {
             var poss = _board.GetTilePoss(i, j);
-            var piece = Instantiate(prefab, poss, Quaternion.identity);
+            var piece = Instantiate(prefab, poss, prefab.transform.rotation);
+            var script = piece.GetComponent<Piece>();
+            piece.transform.SetParent(transform);
+            script.SetTeam(team);
+            script.poss = new Vector2Int(i, j);
         }
 
         public List<Piece> Pieces { get; set; }
