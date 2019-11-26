@@ -42,7 +42,6 @@ namespace Pieces
                 
                 if (PiecesManager.IsEnemy(movement, team)) enemies.Add(movement);
                 else result.Add(movement);
-                break;
             }
             
             return (result, enemies);

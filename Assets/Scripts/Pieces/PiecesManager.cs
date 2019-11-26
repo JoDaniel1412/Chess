@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Board;
@@ -138,20 +139,22 @@ namespace Pieces
                     
                     if (path.Equals("")) continue;
                     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                    LoadPiece(i, j, prefab, team);
+                    StartCoroutine(LoadPiece(i, j, prefab, team));
                 }
             }
         }
 
-        private void LoadPiece(int i, int j, GameObject prefab, Piece.Team team)
+        private IEnumerator LoadPiece(int i, int j, GameObject prefab, Piece.Team team)
         {
-            var poss = _board.GetTilePoss(i, j);
+            var poss = Vector3.zero;
             var piece = Instantiate(prefab, poss, prefab.transform.rotation);
             var script = piece.GetComponent<Piece>();
             piece.transform.SetParent(transform);
             _pieces.Add(piece);
             script.SetTeam(team);
-            script.poss = new Vector2Int(i, j);
+
+            yield return new WaitForSeconds(1);
+            script.Spawn(new Vector2Int(i, j));
         }
 
         public List<Piece> Pieces { get; set; }

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6116800041242498891}
   - component: {fileID: 4727748334364968410}
   - component: {fileID: 6400474643007639355}
-  - component: {fileID: 9211146238390657027}
+  - component: {fileID: 120571291536443448}
   m_Layer: 0
   m_Name: Pawn
   m_TagString: Piece
@@ -125,8 +125,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!135 &9211146238390657027
-SphereCollider:
+--- !u!136 &120571291536443448
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -135,6 +135,7 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
   m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: -0.5, z: 0}

@@ -44,6 +44,21 @@ namespace Pieces
             mesh.material = material;
         }
         
+        // Updates the position
+        public virtual void Move(Vector2Int newPoss)
+        {
+            if (newPoss.Equals(new Vector2Int(-1, -1))) return;
+            poss = newPoss;
+            _target = PiecesManager.GetTarget(newPoss);
+        }
+        
+        public void Spawn(Vector2Int newPoss)
+        {
+            poss = newPoss;
+            _target = PiecesManager.GetTarget(newPoss);
+        }
+        
+        
         protected void Start()
         {
             PiecesManager = FindObjectOfType<PiecesManager>();
@@ -55,14 +70,6 @@ namespace Pieces
             transform.position = Vector3.Lerp(transform.position, _target, Speed);
         }
 
-        // Updates the position
-        protected virtual void Move(Vector2Int newPoss)
-        {
-            if (newPoss.Equals(new Vector2Int(-1, -1))) return;
-            poss = newPoss;
-            _target = PiecesManager.GetTarget(newPoss);
-        }
-        
         /**
         * Return all movements in all 8 directions
         * @occupied are all tiles that are occupied by another piece

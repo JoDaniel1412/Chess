@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Pieces;
 using UnityEngine;
 
@@ -14,11 +16,11 @@ namespace Board
             
         private int _i;
         private int _j;
-        private bool _occupied;
         private bool _moving;
         private GameObject _piece;
         private Vector3 _defaultScale;
         private TilesController _tilesController;
+        private List<GameObject> _colliders = new List<GameObject>();
 
         // Changes the Tile color to Movement material
         public void HighlightMovement(bool state)
@@ -42,25 +44,28 @@ namespace Board
             _j = j;
         }
 
-        public void OnCollisionStay(Collision other)
+        public void OnCollisionEnter(Collision other)
         {
             // Checks if the Tile currently has a Piece on it
             if (!other.gameObject.CompareTag("Piece")) return;
-            _piece = other.gameObject;
-            _occupied = true;
+            _colliders.Add(other.gameObject);
         }
 
         public void OnCollisionExit(Collision other)
         {
             if (!other.gameObject.CompareTag("Piece")) return;
-            _piece = null;
-            _occupied = false;
+            _colliders.Remove(other.gameObject);
         }
 
         private void Start()
         {
             _defaultScale = highlight.transform.localScale;
             _tilesController = FindObjectOfType<TilesController>();
+        }
+
+        private void Update()
+        {
+            _piece = _colliders.Count > 0 ? _colliders.First() : null;
         }
 
         // Moves the current Piece
@@ -131,9 +136,9 @@ namespace Board
         public int I => _i;
 
         public int J => _j;
-        
-        public bool Occupied => _occupied;
 
+        public bool Occupied => _colliders.Count > 0;
+        
         public bool Elevated { get; set; }
     }
 }

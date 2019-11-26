@@ -38,8 +38,9 @@ namespace Pieces
             return (result, enemies);
         }
 
-        protected override void Move(Vector2Int newPoss)
+        public override void Move(Vector2Int newPoss)
         {
+            if (newPoss.Equals(new Vector2Int(-1, -1))) return;
             base.Move(newPoss);
             _firstMove = false;
         }
