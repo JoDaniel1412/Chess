@@ -8,8 +8,12 @@ namespace Pieces
     public abstract class Piece : MonoBehaviour
     {
         public Vector2Int poss;
-        protected PiecesManager PiecesManager;
+        public Team team;
         
+        protected PiecesManager PiecesManager;
+
+
+        public enum Team {White, Black};
         
         // Returns all possible movements a piece can do
         public abstract List<Vector2Int> Movements();
@@ -20,7 +24,7 @@ namespace Pieces
         }
 
         // Updates the position
-        protected void Move(Vector2Int newPoss)
+        protected virtual void Move(Vector2Int newPoss)
         {
             poss = newPoss;
         }
@@ -32,7 +36,7 @@ namespace Pieces
         * @jRange are the rows count of the Board
         * @range is the piece max movement tiles
         */
-        protected List<Vector2Int> AMovement(List<Vector2Int> occupied, (int, int) dimensions, int range)
+        protected List<Vector2Int> AMovement(List<Vector2Int> occupied, (int, int) dimensions, int range=8)
         {
             var cMovement = CMovement(occupied, dimensions, range);
             var dMovement = DMovement(occupied, dimensions, range);
@@ -46,7 +50,7 @@ namespace Pieces
          * @jRange are the rows count of the Board
          * @range is the piece max movement tiles
          */
-        protected IEnumerable<Vector2Int> CMovement(List<Vector2Int> occupied, (int, int) dimensions, int range)
+        protected List<Vector2Int> CMovement(List<Vector2Int> occupied, (int, int) dimensions, int range=8)
         {
             var hMovement = HMovement(occupied, dimensions, range);
             var vMovement = VMovement(occupied, dimensions, range);
@@ -60,7 +64,7 @@ namespace Pieces
          * @jRange are the rows count of the Board
          * @range is the piece max movement tiles
          */
-        protected IEnumerable<Vector2Int> DMovement(List<Vector2Int> occupied, (int, int) dimensions, int range)
+        protected IEnumerable<Vector2Int> DMovement(List<Vector2Int> occupied, (int, int) dimensions, int range=8)
         {
             var function = new Vector2Int(1, 1);
             var left = IterateVectors(occupied, function, dimensions, range);

@@ -17,6 +17,22 @@ namespace Board
                 let tmp = new Vector2Int(tile.I, tile.J) 
                 where vectors.Contains(tmp) select tile).ToList();
         }
+        
+        // Return the center of the Tile in the given (i, j)
+        public Vector3 GetTilePoss(int i, int j)
+        {
+            var center = Vector3.zero;
+            
+            foreach (var tile in Matrix.SelectMany(row => row))
+            {
+                if (tile.I != i || tile.J != j) continue;
+                center = tile.GetComponent<MeshRenderer>().bounds.center;
+                break;
+            }
+
+            center.y = 0.75f;
+            return center;
+        }
 
         // Returns all Tiles that currently has a piece on it
         public List<Vector2Int> GetOccupied()

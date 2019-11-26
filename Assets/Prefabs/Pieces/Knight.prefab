@@ -12,12 +12,12 @@ GameObject:
   - component: {fileID: 661228926531171818}
   - component: {fileID: 7659134724861538687}
   - component: {fileID: 3618588995497249037}
-  - component: {fileID: 3437548346612673722}
   - component: {fileID: 6116800041242498891}
+  - component: {fileID: 6365732033611530767}
   m_Layer: 0
-  m_Name: Piece
+  m_Name: Knight
   m_TagString: Piece
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -28,13 +28,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6511082748192994056}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!33 &661228926531171818
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 2e3394d60b6699b43a570e87cbb89e1e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -96,19 +96,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
---- !u!114 &3437548346612673722
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6511082748192994056}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 720aaa6ea37f45f6888f6cda80d7bae9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _poss: {x: 0, y: 0}
 --- !u!114 &6116800041242498891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,3 +108,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0fade8025942589c0b5c97bc04421a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6365732033611530767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6511082748192994056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80468e32ef3740a4889c30cb922df628, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poss: {x: 1, y: 0}
+  team: 0
