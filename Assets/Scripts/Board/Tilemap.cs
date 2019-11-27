@@ -69,6 +69,7 @@ namespace Board
             #endregion
 
             if (_board) _board.Matrix = matrix;
+            Size = new Vector2(xOffset * _columns, zOffset * _rows);
         }
         
         // Deletes the Grid
@@ -94,5 +95,10 @@ namespace Board
             tile.GetComponent<MeshRenderer>().sharedMaterial = material;
             return sTile;
         }
+
+        
+        // Properties
+        
+        public Vector2 Size { get; set; }
     }
 }
