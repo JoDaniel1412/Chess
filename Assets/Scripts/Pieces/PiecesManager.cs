@@ -56,6 +56,14 @@ namespace Pieces
 
         }
 
+        // Highlights the Tile also when mouse its over a piece
+        public void HighlightTile(bool state, Vector2Int poss)
+        {
+            var tile = _board.GetTile(poss);
+            if (state) tile.Selected();
+            else tile.UnSelected();
+        }
+
         // Gets al positions that are occupied by pieces
         public List<Vector2Int> GetOccupied()
         {
@@ -179,6 +187,8 @@ namespace Pieces
         public List<Piece> Pieces { get; set; }
         
         public Piece.Team Turn { get; set; }
+
+        public bool Animations() => _gameController.animations;
 
     }
 }

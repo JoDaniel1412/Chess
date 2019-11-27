@@ -20,6 +20,12 @@ namespace Board
             return (from row in Matrix from tile in row 
                 where vectors.Contains(tile.Poss) select tile).ToList();
         }
+
+        // Returns the Tile according to the vector
+        public Tile GetTile(Vector2Int poss)
+        {
+            return Matrix[poss.x][poss.y];
+        }
         
         // Return the center of the Tile in the given (i, j)
         public Vector3 GetTileCenter(int i, int j)

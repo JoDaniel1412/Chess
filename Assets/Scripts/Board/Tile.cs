@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -31,6 +32,22 @@ namespace Board
             if (state) Highlight(enemyMaterial);
             _moving = state;
             if (!state) UnHighlight();
+        }
+        
+        // Highlights the Tile when the mouse enters
+        public void Selected()
+        {
+            _tilesController.TileTarget = gameObject;
+            
+            if (_moving) Elevate(true);
+            else Highlight(selectedMaterial);
+        }
+
+        // Removes the highlight of the Tile when mouse exit
+        public void UnSelected()
+        {
+            if (_moving) Elevate(false);
+            else UnHighlight();
         }
 
         // Checks when a Piece enters the Tile
@@ -74,22 +91,6 @@ namespace Board
             _piece.SendMessage("Dropped");
         }
 
-        // Highlights the Tile when the mouse enters
-        private void OnMouseEnter()
-        {
-            _tilesController.TileTarget = gameObject;
-            
-            if (_moving) Elevate(true);
-            else Highlight(selectedMaterial);
-        }
-
-        // Removes the highlight of the Tile when mouse exit
-        private void OnMouseExit()
-        {
-            if (_moving) Elevate(false);
-            else UnHighlight();
-        }
-
         // Turns on the Highlight of the Tile to the given material
         private void Highlight(Material material)
         {
@@ -117,6 +118,10 @@ namespace Board
             scale.y += size;
             highlight.transform.localScale = scale;
         }
+
+        private void OnMouseEnter() => Selected();
+
+        private void OnMouseExit() => UnSelected();
 
 
         // Properties

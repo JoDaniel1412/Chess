@@ -7,6 +7,8 @@ public class GameController : MonoBehaviour
 {
         public GameObject board;
         public GameObject piecesManager;
+        public bool animations;
+        public bool cameraFlip;
 
         private Piece.Team _turn;
         private Camera _cam;

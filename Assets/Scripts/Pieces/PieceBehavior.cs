@@ -33,5 +33,10 @@ namespace Pieces
         private void OnMouseDown() => Selected();
 
         private void OnMouseUp() => Dropped();
+
+        private void OnMouseEnter() => _piecesManager.HighlightTile(true, _piece.poss);
+
+        private void OnMouseExit() => _piecesManager.HighlightTile(false, _piece.poss);
+        
     }
 }
