@@ -24,6 +24,7 @@ namespace Pieces
             return (movements, enemies);
         }
 
+        // Creates a pattern in witch the piece can move
         private (List<Vector2Int> result, List<Vector2Int> enemies) KnightMovement(ICollection<Vector2Int> occupied, Vector2Int function, (int, int) dimensions)
         {
             var result = new List<Vector2Int>();
@@ -47,6 +48,7 @@ namespace Pieces
             return (result, enemies);
         }
 
+        // Checks if the poss to move is occupied or is an enemy
         private static bool IsMovementLegal(Vector2Int vect, ICollection<Vector2Int> occupied, (int, int) dimensions)
         {
             var (rows, columns) = dimensions;

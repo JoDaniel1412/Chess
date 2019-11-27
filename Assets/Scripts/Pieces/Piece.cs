@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Pieces
 {
+    /**
+     * Abstract class, defines the behaviour and movements of all pieces
+     */
     public abstract class Piece : MonoBehaviour
     {
         public Vector2Int poss;
@@ -14,20 +17,23 @@ namespace Pieces
         protected PiecesManager PiecesManager;
 
         private Vector3 _target = Vector3.zero;
-        private const float Speed = 0.1f;
+        private const float Speed = 10f;
 
         public enum Team {White, Black};
+        
         
         // Returns all possible movements a piece can do
         public abstract (List<Vector2Int> movements, List<Vector2Int> enemies) Movements();
 
         // Changes the Piece material base on Team
-        public void SetTeam(Team newTeam)
+        public void LoadTeamMaterial(Team newTeam)
         {
             team = newTeam;
             var mesh = GetComponent<MeshRenderer>();
             var path = "Assets/Materials/Pieces/";
 
+            #region Selects the material
+            
             switch (newTeam)
             {
                 case Team.Black:
@@ -40,11 +46,13 @@ namespace Pieces
                     throw new ArgumentOutOfRangeException(nameof(newTeam), newTeam, null);
             }
             
+            #endregion
+            
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
             mesh.material = material;
         }
         
-        // Updates the position
+        // Updates the position of the Piece
         public virtual void Move(Vector2Int newPoss)
         {
             if (newPoss.Equals(new Vector2Int(-1, -1))) return;
@@ -52,12 +60,12 @@ namespace Pieces
             _target = PiecesManager.GetTarget(newPoss);
         }
         
+        // Moves the Piece to the starting position
         public void Spawn(Vector2Int newPoss)
         {
             poss = newPoss;
             _target = PiecesManager.GetTarget(newPoss);
         }
-        
         
         protected void Start()
         {
@@ -66,8 +74,12 @@ namespace Pieces
 
         protected void Update()
         {
-            if (_target.Equals(Vector3.zero)) return;
-            transform.position = Vector3.Lerp(transform.position, _target, Speed);
+            // Moves the piece to the target
+            var position = transform.position;
+            var dir = _target - position;
+            var distance = Vector3.Distance(_target, position);
+            if (_target.Equals(Vector3.zero) || distance < 0.2f) return;
+            transform.Translate(Time.deltaTime * Speed* dir.normalized, Space.World);
         }
 
         /**
@@ -148,60 +160,61 @@ namespace Pieces
          */
         private (List<Vector2Int>, List<Vector2Int>) IterateVectors(ICollection<Vector2Int> occupied, Vector2Int function, (int, int) dimensions, int range)
         {
-            var result = new List<Vector2Int>();
+            var movements = new List<Vector2Int>();
             var enemies = new List<Vector2Int>();
             var i = poss.x + function.x;
             var j = poss.y + function.y;
-            var movements = 0;
+            var steps = 0;
             
             #region Evaluates positives
 
             var (rows, columns) = dimensions;
             while (i < columns || j < rows)
             {
-                var vect2 = new Vector2Int(i, j);
-                if (occupied.Contains(vect2) || movements >= range) // Breaks if collides or max movements reached
-                {
-                    if (PiecesManager.IsEnemy(vect2, team))
-                        enemies.Add(vect2);
+                if (IterateVectorsAux(i, j, occupied, steps, range, enemies, movements))
                     break;
-                }
-                
-                result.Add(vect2);
                 
                 i += function.x;
                 j += function.y;
-                movements++;
+                steps++;
             }
             
             #endregion
 
             i = poss.x - function.x;
             j = poss.y - function.y;
-            movements = 0;
+            steps = 0;
             
             #region Evaluates negatives
             
             while (i > 0 || j > 0)
             {
-                var vect2 = new Vector2Int(i, j);
-                if (occupied.Contains(vect2) || movements >= range)  // Breaks if collides or max movements reached
-                {
-                    if (PiecesManager.IsEnemy(vect2, team))
-                        enemies.Add(vect2);
+                if (IterateVectorsAux(i, j, occupied, steps, range, enemies, movements))
                     break;
-                }
-                
-                result.Add(vect2);
                 
                 i -= function.x;
                 j -= function.y;
-                movements++;
+                steps++;
             }
             
             #endregion
 
-            return (result, enemies);
+            return (movements, enemies);
+        }
+
+        // Auxiliary function that determines if the movement is valid
+        private bool IterateVectorsAux(int i, int j, ICollection<Vector2Int> occupied, int steps, int range, ICollection<Vector2Int> enemies, ICollection<Vector2Int> movements)
+        {
+            var vect2 = new Vector2Int(i, j);
+            if (occupied.Contains(vect2) || steps >= range) // Breaks if collides or max movements reached
+            {
+                if (PiecesManager.IsEnemy(vect2, team))
+                    enemies.Add(vect2);
+                return true;
+            }
+                
+            movements.Add(vect2);
+            return false;
         }
         
     }

@@ -40,6 +40,7 @@ namespace Pieces
 
         public override void Move(Vector2Int newPoss)
         {
+            // Checks if this is the first move
             if (newPoss.Equals(new Vector2Int(-1, -1))) return;
             base.Move(newPoss);
             _firstMove = false;

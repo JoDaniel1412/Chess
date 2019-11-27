@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 namespace Board
 {
+    /**
+     * Class that loads the graphic Grid in the Scene
+     */
     [ExecuteInEditMode]
     public class Tilemap : MonoBehaviour
     {
@@ -23,12 +25,14 @@ namespace Board
             LoadGrid();
         }
 
+        // Reloads the Grid
         private void OnEnable()
         {
             DestroyGrid();
             LoadGrid();
         }
 
+        // Clears the Grid
         private void OnDisable()
         {
             DestroyGrid();
@@ -43,6 +47,8 @@ namespace Board
             var zOffset = tileSize.z + offset;
             var count = 0;
             
+            #region Creates the matrix
+            
             for (var i = 0; i < _rows; i++)
             {
                 var z = zOffset * i;
@@ -55,10 +61,12 @@ namespace Board
                     count++;
                     row.Add(SetupTile(tile, i, j, count));
                 }
-                
+
                 matrix.Add(row);
                 count--;
             }
+            
+            #endregion
 
             if (_board) _board.Matrix = matrix;
         }
@@ -76,7 +84,7 @@ namespace Board
         {
             tile.SetParent(transform);
             var sTile = tile.GetComponent<Tile>();
-            sTile.Index(i, j);
+            sTile.Poss = new Vector2Int(i, j);
             
             // Material
             const string materialsPath = "Assets/Materials/Board/";

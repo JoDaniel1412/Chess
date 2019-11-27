@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Pieces
 {
+    /**
+     * Class fot the Piece events
+     */
     public class PieceBehavior : MonoBehaviour
     {
         private Piece _piece;

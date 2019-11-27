@@ -1,7 +1,4 @@
-﻿using System;
-using Board;
-using Pieces;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GameController : MonoBehaviour
 {

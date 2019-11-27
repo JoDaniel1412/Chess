@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace Pieces
 {
+    /**
+     * Class that interacts with the GameController and Board so the Pieces can move
+     */
     public class PiecesManager : MonoBehaviour
     {
         private GameController _gameController;
@@ -29,6 +32,7 @@ namespace Pieces
         };
 
 
+        // Function used while a Piece is selected
         public void SelectTarget(GameObject target, (List<Vector2Int> movements, List<Vector2Int> enemies) moves )
         {
             _target = target;
@@ -37,6 +41,7 @@ namespace Pieces
             HighlightMovements(moves.enemies, true, true);
         }
 
+        // Function used when a Piece is deselected
         public void DropTarget()
         {
             var possTo = _tilesController.GetTileOnMouse();
@@ -46,6 +51,7 @@ namespace Pieces
             HighlightMovements(_targetMoves.enemies, false, true);
         }
 
+        // Gets al positions that are occupied by pieces
         public List<Vector2Int> GetOccupied()
         {
             return _board.GetOccupied();
@@ -68,11 +74,13 @@ namespace Pieces
             return result;
         }
 
+        // Search the Tile in the Poss and returns the center
         public Vector3 GetTarget(Vector2Int poss)
         {
-            return _board.GetTilePoss(poss.x, poss.y);
+            return _board.GetTileCenter(poss.x, poss.y);
         }
 
+        // Search for the Board dimensions
         public (int, int) GetDimensions()
         {
             return (_board.rows, _board.columns);
@@ -86,11 +94,13 @@ namespace Pieces
             LoadPieces();
         }
 
+        // Uses the TilesController to highlight the possible movements and enemies
         private void HighlightMovements(List<Vector2Int> movements, bool state, bool enemies)
         {
             _board.GetComponentInChildren<TilesController>().SendMessage("HighlightMovements", (movements, state, enemies));
         }
 
+        // Reads the pieces alignment and creates each Piece 
         private void LoadPieces()
         {
             for (var i = 0; i < _alignment.Count; i++)
@@ -144,6 +154,7 @@ namespace Pieces
             }
         }
 
+        // Instantiates the Piece and sets its values
         private IEnumerator LoadPiece(int i, int j, GameObject prefab, Piece.Team team)
         {
             var poss = Vector3.zero;
@@ -151,7 +162,7 @@ namespace Pieces
             var script = piece.GetComponent<Piece>();
             piece.transform.SetParent(transform);
             _pieces.Add(piece);
-            script.SetTeam(team);
+            script.LoadTeamMaterial(team);
 
             yield return new WaitForSeconds(1);
             script.Spawn(new Vector2Int(i, j));

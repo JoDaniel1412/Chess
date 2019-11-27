@@ -1,8 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Pieces;
 using UnityEngine;
 
 namespace Board
@@ -12,10 +9,8 @@ namespace Board
         public GameObject highlight;
         public Material selectedMaterial;
         public Material movementMaterial; 
-        public Material enemyMaterial; 
-            
-        private int _i;
-        private int _j;
+        public Material enemyMaterial;
+
         private bool _moving;
         private GameObject _piece;
         private Vector3 _defaultScale;
@@ -38,23 +33,21 @@ namespace Board
             if (!state) UnHighlight();
         }
 
-        public void Index(int i, int j)
-        {
-            _i = i;
-            _j = j;
-        }
-
+        // Checks when a Piece enters the Tile
         public void OnCollisionEnter(Collision other)
         {
-            // Checks if the Tile currently has a Piece on it
             if (!other.gameObject.CompareTag("Piece")) return;
-            _colliders.Add(other.gameObject);
+            _colliders.Add(other.gameObject);            
+            Debug.Log("ENTER");
+
         }
 
+        // Checks when a Piece exits the Tile
         public void OnCollisionExit(Collision other)
         {
             if (!other.gameObject.CompareTag("Piece")) return;
-            _colliders.Remove(other.gameObject);
+            _colliders.RemoveAll(other.gameObject.Equals);
+            Debug.Log("EXIT");
         }
 
         private void Start()
@@ -65,12 +58,14 @@ namespace Board
 
         private void Update()
         {
+            // Updates the current piece in the Tile
             _piece = _colliders.Count > 0 ? _colliders.First() : null;
         }
 
         // Moves the current Piece
         private void OnMouseDown()
         {
+            Debug.LogFormat("[INFO] Tile: Occupied: {0}, Colliders: {1}, Poss: {2}", Occupied, _colliders.Count, Poss);
             if (!_piece) return;
             _piece.SendMessage("Selected");
         }
@@ -82,37 +77,31 @@ namespace Board
             _piece.SendMessage("Dropped");
         }
 
+        // Highlights the Tile when the mouse enters
         private void OnMouseEnter()
         {
             _tilesController.TileTarget = gameObject;
             
-            // Highlights the Tile when the mouse enters
-            if (_moving)
-            {
-                Elevate(true);
-                return;
-            }
-            Highlight(selectedMaterial);
+            if (_moving) Elevate(true);
+            else Highlight(selectedMaterial);
         }
 
         // Removes the highlight of the Tile when mouse exit
         private void OnMouseExit()
         {
-            if (_moving)
-            {
-                Elevate(false);
-                return;
-            }
-            UnHighlight();
+            if (_moving) Elevate(false);
+            else UnHighlight();
         }
 
+        // Turns on the Highlight of the Tile to the given material
         private void Highlight(Material material)
         {
             if (_moving) return;
             highlight.SetActive(true);
             highlight.GetComponent<MeshRenderer>().material = material;
         }
-
+        
+        // Turns off the Highlight of the Tile
         private void UnHighlight()
         {
             if (_moving) return;
@@ -121,7 +110,7 @@ namespace Board
             Elevated = false;
         }
 
-        // Raises the Highlight of the tile
+        // Raises and resets the Highlight of the Tile
         private void Elevate(bool state)
         {
             Elevated = state;
@@ -131,11 +120,11 @@ namespace Board
             scale.y += size;
             highlight.transform.localScale = scale;
         }
+
+
+        // Properties
         
-
-        public int I => _i;
-
-        public int J => _j;
+        public Vector2Int Poss { get; set; }
 
         public bool Occupied => _colliders.Count > 0;
         

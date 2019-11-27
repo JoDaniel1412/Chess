@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace Board
 {
+    /**
+     * Class that turns effects and actions over the tiles
+     */
     public class TilesController : MonoBehaviour
     {
         private Tilemap _tilemap;
@@ -16,7 +18,8 @@ namespace Board
             _board = GetComponentInParent<Board>();
         }
 
-        public void HighlightMovements((List<Vector2Int>, bool, bool) message)
+        // Calls the Highlight for each Tile in movement or enemies and set its state
+        public void HighlightMovements((List<Vector2Int> movements, bool state, bool enemies) message)
         {
             var (movements, state, enemies) = message;
             var tiles = _board.GetTiles(movements);
@@ -27,6 +30,7 @@ namespace Board
             }
         }
 
+        // Search the Poss of the current elevated Tile
         public Vector2Int GetTileOnMouse()
         {
             var result = new Vector2Int(-1, -1);
@@ -35,7 +39,7 @@ namespace Board
             {
                 foreach (var tile in row.Where(tile => tile.Elevated))
                 {
-                    result = new Vector2Int(tile.I, tile.J);
+                    result = tile.Poss;
                     break;
                 }
             }
@@ -43,6 +47,9 @@ namespace Board
             return result;
         }
 
+        
+        // Properties
+        
         public GameObject TileTarget { get; set; }
     }
 }
