@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Board;
 using UnityEditor;
 using UnityEngine;
@@ -45,10 +43,17 @@ namespace Pieces
         public void DropTarget()
         {
             var possTo = _tilesController.GetTileOnMouse();
+            
+            // If the Piece moves
+            if (!possTo.Equals(new Vector2Int(-1, -1))) 
+                _gameController.SendMessage("SwitchTurn");
+            
             _target.SendMessage("Move", possTo);
             _target = null;
+            
             HighlightMovements(_targetMoves.movements, false, false);
             HighlightMovements(_targetMoves.enemies, false, true);
+
         }
 
         // Gets al positions that are occupied by pieces
@@ -168,7 +173,12 @@ namespace Pieces
             script.Spawn(new Vector2Int(i, j));
         }
 
+        
+        // Properties
+        
         public List<Piece> Pieces { get; set; }
+        
+        public Piece.Team Turn { get; set; }
 
     }
 }

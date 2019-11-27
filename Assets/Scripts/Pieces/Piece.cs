@@ -78,7 +78,7 @@ namespace Pieces
             var position = transform.position;
             var dir = _target - position;
             var distance = Vector3.Distance(_target, position);
-            if (_target.Equals(Vector3.zero) || distance < 0.2f) return;
+            if (_target.Equals(Vector3.zero) || distance < 0.1f) return;
             transform.Translate(Time.deltaTime * Speed* dir.normalized, Space.World);
         }
 

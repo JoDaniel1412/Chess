@@ -37,9 +37,7 @@ namespace Board
         public void OnCollisionEnter(Collision other)
         {
             if (!other.gameObject.CompareTag("Piece")) return;
-            _colliders.Add(other.gameObject);            
-            Debug.Log("ENTER");
-
+            _colliders.Add(other.gameObject);
         }
 
         // Checks when a Piece exits the Tile
@@ -47,7 +45,6 @@ namespace Board
         {
             if (!other.gameObject.CompareTag("Piece")) return;
             _colliders.RemoveAll(other.gameObject.Equals);
-            Debug.Log("EXIT");
         }
 
         private void Start()
@@ -65,7 +62,7 @@ namespace Board
         // Moves the current Piece
         private void OnMouseDown()
         {
-            Debug.LogFormat("[INFO] Tile: Occupied: {0}, Colliders: {1}, Poss: {2}", Occupied, _colliders.Count, Poss);
+            // Debug.LogFormat("[INFO] Tile: Occupied: {0}, Colliders: {1}, Poss: {2}", Occupied, _colliders.Count, Poss);
             if (!_piece) return;
             _piece.SendMessage("Selected");
         }

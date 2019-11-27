@@ -14,11 +14,13 @@ namespace Pieces
 
         public void Selected()
         {
+            if (_piecesManager.Turn != _piece.team) return;
             _piecesManager.SelectTarget(gameObject, _piece.Movements());
         }
 
         public void Dropped()
         {
+            if (_piecesManager.Turn != _piece.team) return;
             _piecesManager.DropTarget();
         }
         
