@@ -1,5 +1,5 @@
-﻿using System;
-using Board;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Pieces;
 using UnityEngine;
 
@@ -18,7 +18,6 @@ public class GameController : MonoBehaviour
         {
                 // Switch turn
                 _turn = _turn.Equals(Piece.Team.White) ? Piece.Team.Black : Piece.Team.White;
-                piecesManager.GetComponent<PiecesManager>().Turn = _turn;
                 _cam.SendMessage("Flip", _turn);
         }
 
@@ -26,6 +25,35 @@ public class GameController : MonoBehaviour
         {
                 _turn = Piece.Team.White;
                 _cam = FindObjectOfType<Camera>();
-                piecesManager.GetComponent<PiecesManager>().Turn = _turn;
+        }
+
+        private void Update()
+        {
+                // Win the Game
+                var (checkMate, king) = CheckMate();
+                if (checkMate) WinGame(king.GetComponent<Piece>().team);
+        }
+
+        // Returns if only one king its alive
+        private (bool checkMate, GameObject king) CheckMate()
+        {
+                var kings = piecesManager.GetComponent<PiecesManager>().FindKings();
+                return (kings.Count == 1, kings.First());
+        }
+
+        // Locks mouse events in the Board and displays the winner team
+        private void WinGame(Piece.Team team)
+        {
+                _turn = Piece.Team.None;
+                Debug.LogFormat("Winner: {0}", team.ToString());
+        }
+        
+        
+        // Properties
+        
+        public Piece.Team Turn
+        {
+                get => _turn;
+                set => _turn = value;
         }
 }

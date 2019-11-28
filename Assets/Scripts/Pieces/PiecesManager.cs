@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Board;
 using UnityEditor;
 using UnityEngine;
@@ -45,15 +46,35 @@ namespace Pieces
             var possTo = _tilesController.GetTileOnMouse();
             
             // If the Piece moves
-            if (!possTo.Equals(new Vector2Int(-1, -1))) 
+            if (!possTo.Equals(new Vector2Int(-1, -1)))
+            {
                 _gameController.SendMessage("SwitchTurn");
-            
-            _target.SendMessage("Move", possTo);
-            _target = null;
+                
+                // If target poss has an enemy
+                if (_targetMoves.enemies.Contains(possTo)) 
+                {
+                    _target.SendMessage("Attack");
+                    var enemy = GetPieceAt(possTo);
+                    enemy.SendMessage("Died");
+                    _pieces.RemoveAll(enemy.gameObject.Equals);
+                }
+                
+                _target.SendMessage("Move", possTo);
+            }
             
             HighlightMovements(_targetMoves.movements, false, false);
             HighlightMovements(_targetMoves.enemies, false, true);
-
+            _target = null;
+        }
+        
+        public List<GameObject> FindKings()
+        {
+            var kings = (from pieceObj in Pieces 
+                select pieceObj.GetComponent<Piece>() into piece 
+                let type = piece.type where type.Equals(Piece.Type.King) 
+                select piece.gameObject).ToList();
+            
+            return kings;
         }
 
         // Highlights the Tile also when mouse its over a piece
@@ -73,18 +94,10 @@ namespace Pieces
         // Return a bool if the piece in the poss is an enemy
         public bool IsEnemy(Vector2Int vect, Piece.Team myTeam)
         {
-            var result = false;
-            
-            foreach (var pieceObj in _pieces)
-            {
-                var piece = pieceObj.GetComponent<Piece>();
-                if (piece.poss.x != vect.x || piece.poss.y != vect.y) continue;
-                result = !piece.team.Equals(myTeam);
-                break;
-
-            }
-
-            return result;
+            var piece = GetPieceAt(vect);
+            if (piece)
+                return !piece.team.Equals(myTeam);
+            return false;
         }
 
         // Search the Tile in the Poss and returns the center
@@ -113,6 +126,22 @@ namespace Pieces
             _board.GetComponentInChildren<TilesController>().SendMessage("HighlightMovements", (movements, state, enemies));
         }
 
+        // Returns the piece that matches the Poss
+        private Piece GetPieceAt(Vector2Int poss)
+        {
+            Piece result = null;
+            
+            foreach (var pieceObj in _pieces)
+            {
+                var piece = pieceObj.GetComponent<Piece>();
+                if (piece.poss != poss) continue;
+                result = piece;
+                break;
+            }
+
+            return result;
+        }
+
         // Reads the pieces alignment and creates each Piece 
         private void LoadPieces()
         {
@@ -123,6 +152,7 @@ namespace Pieces
                     var path = "Assets/Prefabs/Pieces/";
                     var letter = _alignment[i][j].Item1;
                     var color = _alignment[i][j].Item2;
+                    var type = Piece.Type.None;
                     
                     #region Decides witch piece to place
                     
@@ -130,24 +160,31 @@ namespace Pieces
                     {
                         case 'P':
                             path += "Pawn.prefab";
+                            type = Piece.Type.Pawn;
                             break;
                         case 'R':
                             path += "Rook.prefab";
+                            type = Piece.Type.Rook;
                             break;
                         case 'H':
                             path += "Knight.prefab";
+                            type = Piece.Type.Knight;
                             break;
                         case 'B':
                             path += "Bishop.prefab";
+                            type = Piece.Type.Bishop;
                             break;
                         case 'K':
                             path += "King.prefab";
+                            type = Piece.Type.King;
                             break;
                         case 'Q':
                             path += "Queen.prefab";
+                            type = Piece.Type.Queen;
                             break;
                         default:
                             path = "";
+                            type = Piece.Type.None;
                             break;
                     }
                     
@@ -162,13 +199,13 @@ namespace Pieces
                     
                     if (path.Equals("")) continue;
                     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                    StartCoroutine(LoadPiece(i, j, prefab, team));
+                    StartCoroutine(LoadPiece(i, j, prefab, team, type));
                 }
             }
         }
 
         // Instantiates the Piece and sets its values
-        private IEnumerator LoadPiece(int i, int j, GameObject prefab, Piece.Team team)
+        private IEnumerator LoadPiece(int i, int j, GameObject prefab, Piece.Team team, Piece.Type type)
         {
             var poss = Vector3.zero;
             var piece = Instantiate(prefab, poss, prefab.transform.rotation);
@@ -176,6 +213,7 @@ namespace Pieces
             piece.transform.SetParent(transform);
             _pieces.Add(piece);
             script.LoadTeamMaterial(team);
+            script.type = type;
 
             yield return new WaitForSeconds(1);
             script.Spawn(new Vector2Int(i, j));
@@ -183,10 +221,14 @@ namespace Pieces
 
         
         // Properties
-        
-        public List<Piece> Pieces { get; set; }
-        
-        public Piece.Team Turn { get; set; }
+
+        public List<GameObject> Pieces
+        {
+            get => _pieces;
+            set => _pieces = value;
+        }
+
+        public Piece.Team Turn() => _gameController.Turn;
 
         public bool Animations() => _gameController.animations;
 
