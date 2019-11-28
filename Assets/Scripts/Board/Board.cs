@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -19,6 +20,12 @@ namespace Board
             return (from row in Matrix from tile in row 
                 where vectors.Contains(tile.Poss) select tile).ToList();
         }
+
+        // Returns the Tile according to the vector
+        public Tile GetTile(Vector2Int poss)
+        {
+            return Matrix[poss.x][poss.y];
+        }
         
         // Return the center of the Tile in the given (i, j)
         public Vector3 GetTileCenter(int i, int j)
@@ -35,13 +42,6 @@ namespace Board
             return (from row in Matrix from tile in row where tile.Occupied select tile.Poss).ToList();
         }
 
-        // Returns a pair of Vectors with the board dimensions ([iMin, iMax], [jMin, jMax])
-        public (Vector2Int, Vector2Int) GetDimensions()
-        {
-            return (new Vector2Int(0, columns), new Vector2Int(0, rows));
-        }
-
-        
         // Properties
         
         public List<List<Tile>> Matrix { get; set; } = new List<List<Tile>>();

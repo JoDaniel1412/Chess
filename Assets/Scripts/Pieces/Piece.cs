@@ -12,6 +12,7 @@ namespace Pieces
     public abstract class Piece : MonoBehaviour
     {
         public Vector2Int poss;
+        public Type type;
         public Team team;
         
         protected PiecesManager PiecesManager;
@@ -19,8 +20,8 @@ namespace Pieces
         private Vector3 _target = Vector3.zero;
         private const float Speed = 10f;
 
-        public enum Team {White, Black};
-        
+        public enum Team {White, Black, None}
+        public enum Type {King, Queen, Rook, Bishop, Knight, Pawn, None}
         
         // Returns all possible movements a piece can do
         public abstract (List<Vector2Int> movements, List<Vector2Int> enemies) Movements();
@@ -78,8 +79,9 @@ namespace Pieces
             var position = transform.position;
             var dir = _target - position;
             var distance = Vector3.Distance(_target, position);
-            if (_target.Equals(Vector3.zero) || distance < 0.2f) return;
-            transform.Translate(Time.deltaTime * Speed* dir.normalized, Space.World);
+            if (_target.Equals(Vector3.zero) || distance < 0.1f) return;
+            transform.Translate(Time.deltaTime * Speed * dir.normalized, Space.World);
+            if (!PiecesManager.Animations()) transform.position = _target;
         }
 
         /**
@@ -208,7 +210,7 @@ namespace Pieces
             var vect2 = new Vector2Int(i, j);
             if (occupied.Contains(vect2) || steps >= range) // Breaks if collides or max movements reached
             {
-                if (PiecesManager.IsEnemy(vect2, team))
+                if (PiecesManager.IsEnemy(vect2, team) && steps < range)
                     enemies.Add(vect2);
                 return true;
             }

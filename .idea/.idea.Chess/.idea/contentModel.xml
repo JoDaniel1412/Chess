@@ -13,6 +13,7 @@
             <e p="Tilemap.cs" t="Include" />
             <e p="TilesController.cs" t="Include" />
           </e>
+          <e p="CameraMovement.cs" t="Include" />
           <e p="GameController.cs" t="Include" />
           <e p="Pieces" t="Include">
             <e p="Bishop.cs" t="Include" />

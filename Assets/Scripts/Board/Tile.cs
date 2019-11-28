@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -32,14 +33,28 @@ namespace Board
             _moving = state;
             if (!state) UnHighlight();
         }
+        
+        // Highlights the Tile when the mouse enters
+        public void Selected()
+        {
+            _tilesController.TileTarget = gameObject;
+            
+            if (_moving) Elevate(true);
+            else Highlight(selectedMaterial);
+        }
+
+        // Removes the highlight of the Tile when mouse exit
+        public void UnSelected()
+        {
+            if (_moving) Elevate(false);
+            else UnHighlight();
+        }
 
         // Checks when a Piece enters the Tile
         public void OnCollisionEnter(Collision other)
         {
             if (!other.gameObject.CompareTag("Piece")) return;
-            _colliders.Add(other.gameObject);            
-            Debug.Log("ENTER");
-
+            _colliders.Add(other.gameObject);
         }
 
         // Checks when a Piece exits the Tile
@@ -47,7 +62,6 @@ namespace Board
         {
             if (!other.gameObject.CompareTag("Piece")) return;
             _colliders.RemoveAll(other.gameObject.Equals);
-            Debug.Log("EXIT");
         }
 
         private void Start()
@@ -65,7 +79,7 @@ namespace Board
         // Moves the current Piece
         private void OnMouseDown()
         {
-            Debug.LogFormat("[INFO] Tile: Occupied: {0}, Colliders: {1}, Poss: {2}", Occupied, _colliders.Count, Poss);
+            // Debug.LogFormat("[INFO] Tile: Occupied: {0}, Colliders: {1}, Poss: {2}", Occupied, _colliders.Count, Poss);
             if (!_piece) return;
             _piece.SendMessage("Selected");
         }
@@ -75,22 +89,6 @@ namespace Board
         {
             if (!_piece) return;
             _piece.SendMessage("Dropped");
-        }
-
-        // Highlights the Tile when the mouse enters
-        private void OnMouseEnter()
-        {
-            _tilesController.TileTarget = gameObject;
-            
-            if (_moving) Elevate(true);
-            else Highlight(selectedMaterial);
-        }
-
-        // Removes the highlight of the Tile when mouse exit
-        private void OnMouseExit()
-        {
-            if (_moving) Elevate(false);
-            else UnHighlight();
         }
 
         // Turns on the Highlight of the Tile to the given material
@@ -120,6 +118,10 @@ namespace Board
             scale.y += size;
             highlight.transform.localScale = scale;
         }
+
+        private void OnMouseEnter() => Selected();
+
+        private void OnMouseExit() => UnSelected();
 
 
         // Properties
