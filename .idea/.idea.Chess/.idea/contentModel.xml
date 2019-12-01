@@ -32,9 +32,10 @@
             <e p="Rook.cs" t="Include" />
           </e>
           <e p="UI" t="Include">
+            <e p="MainMenu.cs" t="Include" />
             <e p="Messenger.cs" t="Include" />
+            <e p="UIController.cs" t="Include" />
           </e>
-          <e p="UIController.cs" t="Include" />
         </e>
         <e p="TextMesh Pro" t="Include">
           <e p="Fonts" t="Include">

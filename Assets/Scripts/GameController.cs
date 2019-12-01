@@ -23,6 +23,10 @@ public class GameController : MonoBehaviour
                 _cam.SendMessage("Flip", _turn);
         }
 
+        public void Animations() => animations = !animations;
+
+        public void CameraFlip() => cameraFlip = !cameraFlip;
+
         private void Start()
         {
                 _turn = Piece.Team.None;
