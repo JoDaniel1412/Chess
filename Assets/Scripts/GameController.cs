@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Pieces;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class GameController : MonoBehaviour
 {
         public GameObject board;
         public GameObject piecesManager;
+        public GameObject uiController;
         public bool animations;
         public bool cameraFlip;
 
@@ -23,15 +25,24 @@ public class GameController : MonoBehaviour
 
         private void Start()
         {
-                _turn = Piece.Team.White;
+                _turn = Piece.Team.None;
                 _cam = FindObjectOfType<Camera>();
+
+                StartCoroutine(DelayStart());
         }
 
         private void Update()
         {
                 // Win the Game
+                if (_turn.Equals(Piece.Team.None)) return;
                 var (checkMate, king) = CheckMate();
                 if (checkMate) WinGame(king.GetComponent<Piece>().team);
+        }
+
+        private IEnumerator DelayStart()
+        {
+                yield return new WaitForSeconds(2);
+                _turn = Piece.Team.White;
         }
 
         // Returns if only one king its alive
@@ -44,8 +55,11 @@ public class GameController : MonoBehaviour
         // Locks mouse events in the Board and displays the winner team
         private void WinGame(Piece.Team team)
         {
+                var message = $"Winner: {team.ToString()}";
                 _turn = Piece.Team.None;
-                Debug.LogFormat("Winner: {0}", team.ToString());
+                
+                uiController.SendMessage("Message", (message, team));
+                Debug.LogFormat(message);
         }
         
         
