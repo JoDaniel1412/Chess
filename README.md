@@ -1,16 +1,14 @@
-# **Chess**
+![Logo](Doc/Logo.png)
 
 <a href="https://github.com/JoDaniel1412/Chess/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/badge/license-GPL--3.0-green.svg"></a>
 <a href="https://github.com/JoDaniel1412/Chess/releases"><img alt="GitHub releases" src="https://img.shields.io/badge/release-v0.1_alpha-green.svg"></a>
-
-<img alt="Icon" class="center" width="100" height="100" src="https://github.com/JoDaniel1412/Chess/tree/release/Doc/Logo.png">
 
 Chess it's a **local multi-player** game that allows to play the classic strategy board game
 in a **3D environment** with piece's animations and amazing visual effects.
 Currently the game it's in **alpha** so there is a lot of missing stuff like: the piece's models, 
 some game rules, one player game mode, music and more features that are planed.
  
- ## Game preview
+## Game preview
 ![Menu](Doc/MainScene.png) 
 ![Game](Doc/Game.GIF)
 
@@ -31,4 +29,4 @@ some game rules, one player game mode, music and more features that are planed.
 This project its under the license (GNU GENERAL PUBLIC LICENSE v3) - read the file 
 [LICENSE](LICENSE.md) for more details.
 
-<img alt="Icon" class="center" width="100" height="100" src="https://github.com/JoDaniel1412/Chess/tree/release/Doc/Icon.png">
+![Icon](Doc/Icon.png)
