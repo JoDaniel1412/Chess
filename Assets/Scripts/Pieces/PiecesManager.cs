@@ -12,6 +12,14 @@ namespace Pieces
      */
     public class PiecesManager : MonoBehaviour
     {
+        
+        public GameObject pawn;
+        public GameObject rook;
+        public GameObject knight;
+        public GameObject bishop;
+        public GameObject king;
+        public GameObject queen;
+            
         private GameController _gameController;
         private Board.Board _board;
         private TilesController _tilesController;
@@ -149,41 +157,41 @@ namespace Pieces
             {
                 for (var j = 0; j < _alignment[i].Count; j++)
                 {
-                    var path = "Assets/Prefabs/Pieces/";
                     var letter = _alignment[i][j].Item1;
                     var color = _alignment[i][j].Item2;
-                    var type = Piece.Type.None;
                     
                     #region Decides witch piece to place
                     
+                    Piece.Type type;
+                    GameObject prefab;
                     switch (letter)
                     {
                         case 'P':
-                            path += "Pawn.prefab";
+                            prefab = pawn;
                             type = Piece.Type.Pawn;
                             break;
                         case 'R':
-                            path += "Rook.prefab";
+                            prefab = rook;
                             type = Piece.Type.Rook;
                             break;
                         case 'H':
-                            path += "Knight.prefab";
+                            prefab = knight;
                             type = Piece.Type.Knight;
                             break;
                         case 'B':
-                            path += "Bishop.prefab";
+                            prefab = bishop;
                             type = Piece.Type.Bishop;
                             break;
                         case 'K':
-                            path += "King.prefab";
+                            prefab = king;
                             type = Piece.Type.King;
                             break;
                         case 'Q':
-                            path += "Queen.prefab";
+                            prefab = queen;
                             type = Piece.Type.Queen;
                             break;
                         default:
-                            path = "";
+                            prefab = null;
                             type = Piece.Type.None;
                             break;
                     }
@@ -197,8 +205,7 @@ namespace Pieces
 
                     #endregion
                     
-                    if (path.Equals("")) continue;
-                    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                    if (!prefab) continue;
                     StartCoroutine(LoadPiece(i, j, prefab, team, type));
                 }
             }

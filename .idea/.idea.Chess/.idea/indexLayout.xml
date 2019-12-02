@@ -18,10 +18,12 @@
     <explicitExcludes>
       <Path>.git</Path>
       <Path>.idea</Path>
+      <Path>Doc</Path>
       <Path>Library</Path>
       <Path>Logs</Path>
       <Path>Temp</Path>
       <Path>obj</Path>
+      <Path>out</Path>
     </explicitExcludes>
   </component>
 </project>
