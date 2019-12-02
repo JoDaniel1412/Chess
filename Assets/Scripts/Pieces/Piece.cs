@@ -14,6 +14,8 @@ namespace Pieces
         public Vector2Int poss;
         public Type type;
         public Team team;
+        public Material blackMat;
+        public Material whiteMat;
         
         protected PiecesManager PiecesManager;
 
@@ -31,25 +33,25 @@ namespace Pieces
         {
             team = newTeam;
             var mesh = GetComponent<MeshRenderer>();
-            var path = "Assets/Materials/Pieces/";
+            Material material;
 
             #region Selects the material
             
             switch (newTeam)
             {
                 case Team.Black:
-                    path += "BlackPiece.mat";
+                    material = blackMat;
                     break;
                 case Team.White:
-                    path += "WhitePiece.mat";
+                    material = whiteMat;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(newTeam), newTeam, null);
+                    material = null;
+                    break;
             }
             
             #endregion
             
-            var material = AssetDatabase.LoadAssetAtPath<Material>(path);
             mesh.material = material;
         }
         

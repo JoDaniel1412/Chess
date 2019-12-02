@@ -108,7 +108,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   poss: {x: 2, y: 0}
+  type: 0
   team: 0
+  blackMat: {fileID: 2100000, guid: 0aeb660726bca834f86b25e941071cdc, type: 2}
+  whiteMat: {fileID: 2100000, guid: 2e3394d60b6699b43a570e87cbb89e1e, type: 2}
 --- !u!54 &2561224237904419876
 Rigidbody:
   m_ObjectHideFlags: 0

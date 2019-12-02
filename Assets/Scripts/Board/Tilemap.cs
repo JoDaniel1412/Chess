@@ -12,6 +12,8 @@ namespace Board
     {
         public float offset;
         public Transform tilePref;
+        public Material blackMat;
+        public Material whiteMat;
 
         private Board _board;
         private int _rows;
@@ -88,10 +90,8 @@ namespace Board
             sTile.Poss = new Vector2Int(i, j);
             
             // Material
-            const string materialsPath = "Assets/Materials/Board/";
-            var path = materialsPath + "BlackTile.mat";
-            if (count % 2 == 0) path = materialsPath + "WhiteTile.mat";
-            var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            var material = blackMat;
+            if (count % 2 == 0) material = whiteMat;
             tile.GetComponent<MeshRenderer>().sharedMaterial = material;
             return sTile;
         }
