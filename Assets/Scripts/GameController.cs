@@ -19,8 +19,19 @@ public class GameController : MonoBehaviour
         public void SwitchTurn()
         {
                 // Switch turn
+                var lastTurn = _turn;
                 _turn = _turn.Equals(Piece.Team.White) ? Piece.Team.Black : Piece.Team.White;
                 _cam.SendMessage("Flip", _turn);
+                
+                // Verifies fo Check of Checkmate
+                var kingObj = piecesManager.GetComponent<PiecesManager>().FindKing(_turn);
+                var (check, checkmate) = kingObj.GetComponent<King>().IsCheck();
+                if (checkmate)
+                { 
+                        uiController.SendMessage("Message", ("CheckMate", lastTurn));
+                        WinGame(lastTurn);
+                }
+                else if (check) uiController.SendMessage("Message", ("Check", lastTurn));
         }
 
         public void Animations() => animations = !animations;
@@ -39,8 +50,8 @@ public class GameController : MonoBehaviour
         {
                 // Win the Game
                 if (_turn.Equals(Piece.Team.None)) return;
-                var (checkMate, king) = CheckMate();
-                if (checkMate) WinGame(king.GetComponent<Piece>().team);
+                var (oneKing, king) = KingKilled();
+                if (oneKing) WinGame(king.GetComponent<Piece>().team);
         }
 
         private IEnumerator DelayStart()
@@ -50,7 +61,7 @@ public class GameController : MonoBehaviour
         }
 
         // Returns if only one king its alive
-        private (bool checkMate, GameObject king) CheckMate()
+        private (bool oneKing, GameObject king) KingKilled()
         {
                 var kings = piecesManager.GetComponent<PiecesManager>().FindKings();
                 return (kings.Count == 1, kings.First());

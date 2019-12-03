@@ -28,6 +28,8 @@ namespace Pieces
         // Returns all possible movements a piece can do
         public abstract (List<Vector2Int> movements, List<Vector2Int> enemies) Movements();
 
+        public virtual (List<Vector2Int> movements, List<Vector2Int> enemies) MovementsForCheck() { return (null, null); }
+
         // Changes the Piece material base on Team
         public void LoadTeamMaterial(Team newTeam)
         {
@@ -81,7 +83,14 @@ namespace Pieces
             var position = transform.position;
             var dir = _target - position;
             var distance = Vector3.Distance(_target, position);
-            if (_target.Equals(Vector3.zero) || distance < 0.1f) return;
+            
+            // Arrives destination
+            if (_target.Equals(Vector3.zero) || distance < 0.1f)
+            {
+                transform.position = _target;
+                return;
+            }
+            
             transform.Translate(Time.deltaTime * Speed * dir.normalized, Space.World);
             if (!PiecesManager.Animations()) transform.position = _target;
         }
@@ -221,5 +230,9 @@ namespace Pieces
             return false;
         }
         
+        
+        // Properties
+
+        public bool ArrivedDestination => transform.position == _target;
     }
 }

@@ -37,6 +37,22 @@ namespace Pieces
             
             return (result, enemies);
         }
+        
+        // Return the possible movements that the Pawn can Check 
+        public override (List<Vector2Int> movements, List<Vector2Int> enemies) MovementsForCheck()
+        {
+            var enemies = new List<Vector2Int>();
+            
+            // Direction of Movement
+            var dir = 1;
+            if (team.Equals(Team.Black)) dir = -1;
+            
+            // Check Enemies
+            enemies.Add(new Vector2Int(poss.x + dir, poss.y + 1));
+            enemies.Add(new Vector2Int(poss.x + dir, poss.y - 1));
+
+            return (new List<Vector2Int>(), enemies);
+        }
 
         public override void Move(Vector2Int newPoss)
         {

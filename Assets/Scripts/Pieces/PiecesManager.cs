@@ -56,8 +56,6 @@ namespace Pieces
             // If the Piece moves
             if (!possTo.Equals(new Vector2Int(-1, -1)))
             {
-                _gameController.SendMessage("SwitchTurn");
-                
                 // If target poss has an enemy
                 if (_targetMoves.enemies.Contains(possTo)) 
                 {
@@ -68,6 +66,7 @@ namespace Pieces
                 }
                 
                 _target.SendMessage("Move", possTo);
+                StartCoroutine(SwitchTurn(_target.GetComponent<Piece>()));
             }
             
             HighlightMovements(_targetMoves.movements, false, false);
@@ -75,6 +74,7 @@ namespace Pieces
             _target = null;
         }
         
+        // Search for the kings
         public List<GameObject> FindKings()
         {
             var kings = (from pieceObj in Pieces 
@@ -83,6 +83,45 @@ namespace Pieces
                 select piece.gameObject).ToList();
             
             return kings;
+        }
+
+        // Search for the king of the given team
+        public GameObject FindKing(Piece.Team team)
+        {
+            var kings = FindKings();
+            GameObject result = null;
+            
+            foreach (var kingObj in from kingObj in kings 
+                let king = kingObj.GetComponent<Piece>() 
+                where king.team.Equals(team) select kingObj)
+            {
+                result = kingObj;
+            }
+
+            return result;
+        }
+
+        // Return all possible movement a team can do
+        public (List<Vector2Int> movements, List<Vector2Int> enemies) AllMovements(Piece.Team team)
+        {
+            var movements = new List<Vector2Int>();
+            var enemies = new List<Vector2Int>(); 
+            
+            foreach (var piece in _pieces.Select(pieceObj => pieceObj.GetComponent<Piece>()).Where(piece => piece.team.Equals(team)))
+            {
+                List<Vector2Int> movementsSub, enemiesSub;
+                
+                // King and Pawn have different Check patterns
+                if (piece.type.Equals(Piece.Type.King) || piece.type.Equals(Piece.Type.Pawn))
+                    (movementsSub, enemiesSub) = piece.MovementsForCheck();
+                else (movementsSub, enemiesSub) = piece.Movements();
+
+                // Concatenates the lists
+                movements = movements.Concat(movementsSub).ToList();
+                enemies = enemies.Concat(enemiesSub).ToList();
+            }
+
+            return (movements, enemies);
         }
 
         // Highlights the Tile also when mouse its over a piece
@@ -155,6 +194,17 @@ namespace Pieces
             }
 
             return result;
+        }
+
+        // Switches the turn until the piece arrives destination
+        private IEnumerator SwitchTurn(Piece piece)
+        {
+            if (!piece.ArrivedDestination)
+            {
+                yield return new WaitForSeconds(0.2f);
+                StartCoroutine(SwitchTurn(piece));
+            }
+            else _gameController.SendMessage("SwitchTurn");
         }
 
         // Reads the pieces alignment and creates each Piece 
