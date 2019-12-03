@@ -145,6 +145,9 @@ namespace Pieces
             return occupied.Where(vect => !IsEnemy(vect, team)).ToList();
         }
 
+        // Gets all vectors inside the Board dimensions
+        public List<Vector2Int> GetValidVectors() => _board.Vectors;
+
         // Return a bool if the piece in the poss is an enemy
         public bool IsEnemy(Vector2Int vect, Piece.Team myTeam)
         {

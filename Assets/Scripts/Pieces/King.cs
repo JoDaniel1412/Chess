@@ -14,10 +14,11 @@ namespace Pieces
         {
             var (movements, enemies) = AMovement(PiecesManager.GetOccupied(), PiecesManager.GetDimensions(), 1);
             var otherTeam = team.Equals(Team.White) ? Team.Black : Team.White;
+            var validVectors = PiecesManager.GetValidVectors();
 
             // Movements following check rules
             var (movementsOther, enemiesOther) = PiecesManager.AllMovements(otherTeam);
-            var movementsValid = movements.Except(movementsOther).ToList();
+            var movementsValid = movements.Except(movementsOther).Intersect(validVectors).ToList();
 
             // Verifies check or checkmate
             _check = enemiesOther.Contains(poss);

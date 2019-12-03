@@ -44,6 +44,7 @@ namespace Board
         private void LoadGrid()
         {
             var matrix = new List<List<Tile>>();
+            var vectors = new List<Vector2Int>();
             var tileSize = tilePref.GetComponent<MeshRenderer>().bounds.size;
             var xOffset = tileSize.x + offset;
             var zOffset = tileSize.z + offset;
@@ -62,6 +63,7 @@ namespace Board
                     var tile = Instantiate(tilePref, poss, Quaternion.identity);
                     count++;
                     row.Add(SetupTile(tile, i, j, count));
+                    vectors.Add(new Vector2Int(i, j));
                 }
 
                 matrix.Add(row);
@@ -70,7 +72,11 @@ namespace Board
             
             #endregion
 
-            if (_board) _board.Matrix = matrix;
+            if (_board)
+            {
+                _board.Matrix = matrix;
+                _board.Vectors = vectors;
+            }
             Size = new Vector2(xOffset * _columns, zOffset * _rows);
         }
         
