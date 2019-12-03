@@ -98,6 +98,13 @@ namespace Pieces
         {
             return _board.GetOccupied();
         }
+        
+        // Gets al positions that are occupied by pieces of the team
+        public List<Vector2Int> GetOccupied(Piece.Team team)
+        {
+            var occupied = _board.GetOccupied();
+            return occupied.Where(vect => !IsEnemy(vect, team)).ToList();
+        }
 
         // Return a bool if the piece in the poss is an enemy
         public bool IsEnemy(Vector2Int vect, Piece.Team myTeam)
