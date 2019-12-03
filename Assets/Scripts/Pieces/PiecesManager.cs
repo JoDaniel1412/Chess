@@ -61,6 +61,7 @@ namespace Pieces
                 {
                     _target.SendMessage("Attack");
                     var enemy = GetPieceAt(possTo);
+                    _board.GetTile(possTo).PieceDead(enemy.gameObject);
                     enemy.SendMessage("Died");
                     _pieces.RemoveAll(enemy.gameObject.Equals);
                 }

@@ -26,12 +26,8 @@ public class GameController : MonoBehaviour
                 // Verifies fo Check of Checkmate
                 var kingObj = piecesManager.GetComponent<PiecesManager>().FindKing(_turn);
                 var (check, checkmate) = kingObj.GetComponent<King>().IsCheck();
-                if (checkmate)
-                { 
-                        uiController.SendMessage("Message", ("CheckMate", lastTurn));
-                        WinGame(lastTurn);
-                }
-                else if (check) uiController.SendMessage("Message", ("Check", lastTurn));
+                if (checkmate) WinGame(lastTurn);
+                else if (check) uiController.SendMessage("Message", ("CHECK", lastTurn));
         }
 
         public void Animations() => animations = !animations;
@@ -73,7 +69,7 @@ public class GameController : MonoBehaviour
                 var message = $"Winner: {team.ToString()}";
                 _turn = Piece.Team.None;
                 
-                uiController.SendMessage("Message", (message, team));
+                uiController.SendMessage("Message", ("CHECKMATE", team));
                 Debug.LogFormat(message);
         }
         

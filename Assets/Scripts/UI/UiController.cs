@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Pieces;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -27,6 +29,7 @@ namespace UI
             }
         }
 
+        // Returns to the MainScene
         public void Back()
         {
             SceneManager.UnloadSceneAsync("Scenes/GameScene");
