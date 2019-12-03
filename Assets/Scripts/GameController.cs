@@ -34,6 +34,12 @@ public class GameController : MonoBehaviour
 
         public void CameraFlip() => cameraFlip = !cameraFlip;
 
+        public void PawnPromotion(Piece.Team team)
+        { 
+                uiController.SendMessage("Message", ("Pawn Promotion", team));
+                SwitchTurn();
+        }
+
         private void Start()
         {
                 _turn = Piece.Team.None;

@@ -61,18 +61,25 @@ namespace Pieces
                 {
                     _target.SendMessage("Attack");
                     var enemy = GetPieceAt(possTo);
-                    _board.GetTile(possTo).PieceDead(enemy.gameObject);
-                    enemy.SendMessage("Died");
-                    _pieces.RemoveAll(enemy.gameObject.Equals);
+                    KillPiece(enemy.gameObject, possTo);
                 }
                 
                 _target.SendMessage("Move", possTo);
-                StartCoroutine(SwitchTurn(_target.GetComponent<Piece>()));
+                if (!_target) _gameController.SendMessage("SwitchTurn");
+                else StartCoroutine(SwitchTurn(_target.GetComponent<Piece>()));
             }
             
             HighlightMovements(_targetMoves.movements, false, false);
             HighlightMovements(_targetMoves.enemies, false, true);
             _target = null;
+        }
+
+        // Kills the piece en the Tile poss
+        public void KillPiece(GameObject piece, Vector2Int poss)
+        {
+            _board.GetTile(poss).PieceDead(piece);
+            piece.SendMessage("Died");
+            _pieces.RemoveAll(piece.Equals);
         }
         
         // Search for the kings
@@ -168,6 +175,22 @@ namespace Pieces
         public (int, int) GetDimensions()
         {
             return (_board.rows, _board.columns);
+        }
+
+        // Converts the pawn to a queen
+        public void PromotePawn(Vector3 poss, Vector2Int boardIndex, Piece.Team team)
+        {
+            var piece = Instantiate(queen, poss, queen.transform.rotation);
+            piece.transform.SetParent(transform);
+            _pieces.Add(piece);
+            
+            var script = piece.GetComponent<Piece>();
+            script.type = Piece.Type.Queen;
+            script.poss = boardIndex;
+            script.Target1 = poss;
+            script.LoadTeamMaterial(team);
+            
+            _gameController.PawnPromotion(team);
         }
             
         private void Start()

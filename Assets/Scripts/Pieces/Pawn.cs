@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Pieces
@@ -60,6 +61,25 @@ namespace Pieces
             if (newPoss.Equals(new Vector2Int(-1, -1))) return;
             base.Move(newPoss);
             _firstMove = false;
+            
+        }
+
+        public void LateUpdate()
+        {
+            // Promotion
+            var limit = team.Equals(Team.White) ? 7 : 0;
+            if (transform.position.Equals(Target)
+                && poss.x.Equals(limit)
+                && !_firstMove)
+                Promote();
+        }
+
+        // Converts the pawn to a queen
+        private void Promote()
+        {
+            Debug.LogFormat("Pawn promoted, team: {0}, poss: {1}", team, poss);
+            PiecesManager.PromotePawn(transform.position, poss, team);
+            PiecesManager.KillPiece(gameObject, poss);
         }
     }
 }
