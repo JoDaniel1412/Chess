@@ -45,5 +45,8 @@ namespace Board
         // Properties
         
         public List<List<Tile>> Matrix { get; set; } = new List<List<Tile>>();
+        
+        public List<Vector2Int> Vectors { get; set; }
+
     }
 }

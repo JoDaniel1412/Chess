@@ -64,6 +64,11 @@ namespace Board
             _colliders.RemoveAll(other.gameObject.Equals);
         }
 
+        public void PieceDead(GameObject pieceObject)
+        {
+            _colliders.RemoveAll(pieceObject.Equals);
+        }
+
         private void Start()
         {
             _defaultScale = highlight.transform.localScale;
@@ -79,7 +84,7 @@ namespace Board
         // Moves the current Piece
         private void OnMouseDown()
         {
-            // Debug.LogFormat("[INFO] Tile: Occupied: {0}, Colliders: {1}, Poss: {2}", Occupied, _colliders.Count, Poss);
+            Debug.LogFormat("[INFO] Tile: Occupied: {0}, Colliders: {1}, Poss: {2}", Occupied, _colliders.Count, Poss);
             if (!_piece) return;
             _piece.SendMessage("Selected");
         }

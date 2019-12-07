@@ -18,8 +18,8 @@ namespace Pieces
         public Material whiteMat;
         
         protected PiecesManager PiecesManager;
-
-        private Vector3 _target = Vector3.zero;
+        protected Vector3 Target = Vector3.zero;
+        
         private const float Speed = 10f;
 
         public enum Team {White, Black, None}
@@ -27,6 +27,8 @@ namespace Pieces
         
         // Returns all possible movements a piece can do
         public abstract (List<Vector2Int> movements, List<Vector2Int> enemies) Movements();
+
+        public virtual (List<Vector2Int> movements, List<Vector2Int> enemies) MovementsForCheck() { return (null, null); }
 
         // Changes the Piece material base on Team
         public void LoadTeamMaterial(Team newTeam)
@@ -60,14 +62,14 @@ namespace Pieces
         {
             if (newPoss.Equals(new Vector2Int(-1, -1))) return;
             poss = newPoss;
-            _target = PiecesManager.GetTarget(newPoss);
+            Target = PiecesManager.GetTarget(newPoss);
         }
         
         // Moves the Piece to the starting position
         public void Spawn(Vector2Int newPoss)
         {
             poss = newPoss;
-            _target = PiecesManager.GetTarget(newPoss);
+            Target = PiecesManager.GetTarget(newPoss);
         }
         
         protected void Start()
@@ -75,15 +77,22 @@ namespace Pieces
             PiecesManager = FindObjectOfType<PiecesManager>();
         }
 
-        protected void Update()
+        public void Update()
         {
             // Moves the piece to the target
             var position = transform.position;
-            var dir = _target - position;
-            var distance = Vector3.Distance(_target, position);
-            if (_target.Equals(Vector3.zero) || distance < 0.1f) return;
+            var dir = Target - position;
+            var distance = Vector3.Distance(Target, position);
+            
+            // Arrives destination
+            if (Target.Equals(Vector3.zero) || distance < 0.1f)
+            {
+                transform.position = Target;
+                return;
+            }
+            
             transform.Translate(Time.deltaTime * Speed * dir.normalized, Space.World);
-            if (!PiecesManager.Animations()) transform.position = _target;
+            if (!PiecesManager.Animations()) transform.position = Target;
         }
 
         /**
@@ -221,5 +230,15 @@ namespace Pieces
             return false;
         }
         
+        
+        // Properties
+
+        public bool ArrivedDestination => transform.position == Target;
+
+        public Vector3 Target1
+        {
+            get => Target;
+            set => Target = value;
+        }
     }
 }
