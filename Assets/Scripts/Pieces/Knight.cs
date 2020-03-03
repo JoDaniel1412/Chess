@@ -9,7 +9,7 @@ namespace Pieces
     {
         public override (List<Vector2Int> movements, List<Vector2Int> enemies) Movements()
         {
-            var occupied = PiecesManager.GetOccupied();
+            var occupied = PiecesManager.GetOccupied(team);
             var dimensions = PiecesManager.GetDimensions();
             
             var function = new Vector2Int(1, 2);

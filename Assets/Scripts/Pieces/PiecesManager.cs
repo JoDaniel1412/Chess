@@ -56,25 +56,33 @@ namespace Pieces
             // If the Piece moves
             if (!possTo.Equals(new Vector2Int(-1, -1)))
             {
-                _gameController.SendMessage("SwitchTurn");
-                
                 // If target poss has an enemy
                 if (_targetMoves.enemies.Contains(possTo)) 
                 {
                     _target.SendMessage("Attack");
                     var enemy = GetPieceAt(possTo);
-                    enemy.SendMessage("Died");
-                    _pieces.RemoveAll(enemy.gameObject.Equals);
+                    KillPiece(enemy.gameObject, possTo);
                 }
                 
                 _target.SendMessage("Move", possTo);
+                if (!_target) _gameController.SendMessage("SwitchTurn");
+                else StartCoroutine(SwitchTurn(_target.GetComponent<Piece>()));
             }
             
             HighlightMovements(_targetMoves.movements, false, false);
             HighlightMovements(_targetMoves.enemies, false, true);
             _target = null;
         }
+
+        // Kills the piece en the Tile poss
+        public void KillPiece(GameObject piece, Vector2Int poss)
+        {
+            _board.GetTile(poss).PieceDead(piece);
+            piece.SendMessage("Died");
+            _pieces.RemoveAll(piece.Equals);
+        }
         
+        // Search for the kings
         public List<GameObject> FindKings()
         {
             var kings = (from pieceObj in Pieces 
@@ -83,6 +91,45 @@ namespace Pieces
                 select piece.gameObject).ToList();
             
             return kings;
+        }
+
+        // Search for the king of the given team
+        public GameObject FindKing(Piece.Team team)
+        {
+            var kings = FindKings();
+            GameObject result = null;
+            
+            foreach (var kingObj in from kingObj in kings 
+                let king = kingObj.GetComponent<Piece>() 
+                where king.team.Equals(team) select kingObj)
+            {
+                result = kingObj;
+            }
+
+            return result;
+        }
+
+        // Return all possible movement a team can do
+        public (List<Vector2Int> movements, List<Vector2Int> enemies) AllMovements(Piece.Team team)
+        {
+            var movements = new List<Vector2Int>();
+            var enemies = new List<Vector2Int>(); 
+            
+            foreach (var piece in _pieces.Select(pieceObj => pieceObj.GetComponent<Piece>()).Where(piece => piece.team.Equals(team)))
+            {
+                List<Vector2Int> movementsSub, enemiesSub;
+                
+                // King and Pawn have different Check patterns
+                if (piece.type.Equals(Piece.Type.King) || piece.type.Equals(Piece.Type.Pawn))
+                    (movementsSub, enemiesSub) = piece.MovementsForCheck();
+                else (movementsSub, enemiesSub) = piece.Movements();
+
+                // Concatenates the lists
+                movements = movements.Concat(movementsSub).ToList();
+                enemies = enemies.Concat(enemiesSub).ToList();
+            }
+
+            return (movements, enemies);
         }
 
         // Highlights the Tile also when mouse its over a piece
@@ -98,6 +145,16 @@ namespace Pieces
         {
             return _board.GetOccupied();
         }
+        
+        // Gets al positions that are occupied by pieces of the team
+        public List<Vector2Int> GetOccupied(Piece.Team team)
+        {
+            var occupied = _board.GetOccupied();
+            return occupied.Where(vect => !IsEnemy(vect, team)).ToList();
+        }
+
+        // Gets all vectors inside the Board dimensions
+        public List<Vector2Int> GetValidVectors() => _board.Vectors;
 
         // Return a bool if the piece in the poss is an enemy
         public bool IsEnemy(Vector2Int vect, Piece.Team myTeam)
@@ -118,6 +175,22 @@ namespace Pieces
         public (int, int) GetDimensions()
         {
             return (_board.rows, _board.columns);
+        }
+
+        // Converts the pawn to a queen
+        public void PromotePawn(Vector3 poss, Vector2Int boardIndex, Piece.Team team)
+        {
+            var piece = Instantiate(queen, poss, queen.transform.rotation);
+            piece.transform.SetParent(transform);
+            _pieces.Add(piece);
+            
+            var script = piece.GetComponent<Piece>();
+            script.type = Piece.Type.Queen;
+            script.poss = boardIndex;
+            script.Target1 = poss;
+            script.LoadTeamMaterial(team);
+            
+            _gameController.PawnPromotion(team);
         }
             
         private void Start()
@@ -148,6 +221,17 @@ namespace Pieces
             }
 
             return result;
+        }
+
+        // Switches the turn until the piece arrives destination
+        private IEnumerator SwitchTurn(Piece piece)
+        {
+            if (!piece.ArrivedDestination)
+            {
+                yield return new WaitForSeconds(0.2f);
+                StartCoroutine(SwitchTurn(piece));
+            }
+            else _gameController.SendMessage("SwitchTurn");
         }
 
         // Reads the pieces alignment and creates each Piece 

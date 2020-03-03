@@ -6,9 +6,9 @@ namespace UI
 {
     public class Messenger : MonoBehaviour
     {
-        public float displayTime;
-        
-        
+        public const float DisplayTime = 2f;
+
+
         // Starts a coroutine that display the message in the displayTime lapse
         public void DisplayText(string message)
         {
@@ -19,7 +19,7 @@ namespace UI
 
         private IEnumerator DisplayTimer()
         {
-            yield return new WaitForSeconds(displayTime);
+            yield return new WaitForSeconds(DisplayTime);
             ActiveChildren(false);
         }
         
