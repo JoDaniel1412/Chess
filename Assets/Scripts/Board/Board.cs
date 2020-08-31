@@ -13,6 +13,7 @@ namespace Board
     {
         public int rows;
         public int columns;
+        public float yOffset;
 
         // Returns the Tiles according to each vector
         public List<Tile> GetTiles(List<Vector2Int> vectors)
@@ -32,7 +33,7 @@ namespace Board
         {
             var tile = Matrix[i][j];
             var center = tile.GetComponent<MeshRenderer>().bounds.center;
-            center.y = 0.75f;
+            center.y = yOffset;
             return center;
         }
 
